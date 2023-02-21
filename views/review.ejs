@@ -1,0 +1,84 @@
+<%- include("partials/header"); -%>
+    <div class="review-wrapper">
+        <div class="review-product">  
+                <h2><i class='bx bxs-message-alt-detail'></i>Review</h2>
+                <form action="/review" method="post">
+                    <label>Product</label>
+                    <input type="text" placeholder="Search a product to review" name="search_product_review" id="search-product-review">
+                    <div id="search-results-review"></div>
+                    <label>Rating</label>
+                    <p>⭐⭐⭐⭐⭐</p>
+                    <label>Review</label>
+                    <textarea placeholder="Described your experiece" name="review_product" id="" cols="30" rows="10"></textarea>
+                    <button type="submit">Post my review</button>
+                </form>
+                
+            
+        </div>
+        <div id="review-container" class="product-review">
+            <img src="" alt="">
+            <h3></h3>
+            <p>⭐⭐⭐⭐⭐ 3.6</p>
+            <p>5 Ratings</p>
+            <p>5 Review</p>
+        </div>
+    </div>
+<%- include('partials/footer'); -%>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- app.post("/review", async (req, res) => {
+    const productName= req.body.search_product_review;
+    const productReview = req.body.review_product;
+    const findProduct = Product.findOne({ productName: productName });
+    console.log(findProduct._id);
+    const product = await Product.findById(findProduct._id);
+    const user = await User.findById(req.user._id);
+  
+    const review = new Review({
+      review: productReview,
+      user: user,
+      product: product 
+    });
+    // console.log(review);
+    // await review.save();
+  
+    // user.reviews.push(review._id);
+    // product.reviews.push(review._id);
+  
+    // await user.save();
+    // await product.save();
+  }); -->

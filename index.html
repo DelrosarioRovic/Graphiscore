@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    nav {
+    background-color: black;
+    padding: 0 2em 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  nav a, nav li {
+    text-decoration: none;
+    display: block;
+    color: white;
+    margin: 0 10px;
+  }
+  .left-nav {
+    display: flex;
+    align-items: center;
+}
+.left-nav .logo {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+.left-nav a img{
+    height: 80px;
+    width: 85px;
+}
+.left-nav a h2 {
+    color: rgb(255, 255, 255);
+    position: relative;
+    right: 21px;
+    font-size: 2rem;
+}
+.right-nav {
+    display: flex;
+}
+.inside-menu-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.dropdown {
+  display: flex;
+}
+.main-nav {
+  display: flex;
+  align-items: center;
+}
+.dropdown-button {
+  font-size: 2.5rem;
+  align-self: center;
+  display: none;
+}
+.dropdown-button i {
+  margin-top: 6px;
+}
+.search{
+    display: flex;
+    align-items: center;
+    width: 30%;
+    margin-right: 30px;
+  }
+  
+  .form-outline {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .form-outline input[type="text"] {
+    border: none;
+    font-size: 14px;
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+  }
+  
+  .form-outline button[type="submit"] {
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    padding: 5px 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .form-outline button[type="submit"] i {
+    padding: 5px;
+  }
+  .search-icon {
+    font-size: 1.5rem;
+  }
+  .nav-menu {
+    font-size:2.5rem;
+    display: none;
+    cursor:pointer;
+    color: white;
+}
+
+
+
+
+@media only screen and (max-width: 767px) {
+  /* nav menu */
+  .nav-menu { 
+    display: block;
+  }
+  .inside-menu-nav {
+  position: absolute;
+  top: 80px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background-color: black;
+  transition: 0.5s;
+  flex-direction: column;
+  justify-content: space-evenly;
+  height: 0;
+  overflow: hidden;
+}
+.main-nav {
+  display: block !important;
+  width: fit-content;
+  margin: 0 auto 0 auto; 
+  opacity: 0;
+}
+.main-nav li {
+  margin-bottom: 10px;
+}
+.search {
+  width: 80%;
+  margin: 0 auto 0 auto; 
+  opacity: 0;
+}
+#myTopnav.active {
+  height: 45vh;
+}
+
+#myTopnav.active .main-nav, #myTopnav.active .search {
+  opacity: 1;
+}
+}
+
+@media only screen and (min-width: 769px) and (max-width: 1023px) {
+    .dropdown {
+      position: relative;
+    }
+    .main-nav {
+      position: absolute;
+      top: 3em;
+      right: 1.5em;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+      padding: 5px;
+      flex-direction: column;
+      align-items: start;
+      display: none;
+    }
+    .main-nav a{
+      margin: 0 0 5px 0;
+      text-decoration: none;
+      display: block;
+      color: black;
+    }
+    .dropdown-button {
+        display: block;
+        background-color: black;
+        border: none;
+        color: white;
+    }
+  }
+
+  @media only screen and (min-width: 1024px) {
+    .main-nav {
+      display: flex !important;
+    }
+  }
+
+
+
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="left-nav">
+            <a id="home" href="/" class="logo">
+                <img src="public/imgs/My project.png" alt="">
+                <h2>raphiScore</h2>
+            </a>
+          
+    </div>
+    <div class="right-nav">
+      <div id="myTopnav" class="inside-menu-nav">
+      <div class="search">
+        <form class="form-outline">
+            <input type="text" id="search" placeholder="Search">
+            <button type="submit"><i class='bx bx-search search-icon' style='color:#040404' ></i></button>
+        </form>
+    </div>
+    <div class="dropdown"> 
+      <button class="dropdown-button"> 
+         <i class='bx bx-dots-vertical-rounded nav-more'></i>
+      </button>
+    <ul class="main-nav">
+    <li>
+        <a href="">Review</a>
+    </li>
+    <li>
+        <a href="">Products</a>
+    </li>
+    <li>
+        <a href="">About</a>
+    </li>
+  </ul>
+  </div>   
+</div>
+    <i class="bx bx-menu nav-menu"></i> 
+
+        <!-- if login or not -->
+       
+          
+       
+        
+    </div>
+</nav>
+  <script>
+    const button = document.querySelector('.dropdown-button');
+    
+    button.addEventListener('click', function() {
+      var mainNav = document.querySelector(".main-nav").style.display;
+      if (mainNav === 'flex') {
+        document.querySelector(".main-nav").style.display = 'none';
+      } else {
+        document.querySelector(".main-nav").style.display = 'flex';
+      }
+  });
+
+  NewMenu = document.querySelector(".nav-menu");
+  NewMenu.onclick = function() {
+    Navbar = document.querySelector("#myTopnav");
+    Navbar.classList.toggle("active");
+  }
+  </script>
+</body>
+</html>

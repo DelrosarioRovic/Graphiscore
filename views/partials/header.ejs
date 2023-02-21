@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- icon cdn -->
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+        
+        <!-- bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <!-- external css -->
+        <link rel="stylesheet" href="/css/styles.css">
+
+        <title>GraphiScore</title>
+    </head>
+    <body>
+        <nav>
+            <div class="left-nav">
+                <a id="home" href="/" class="logo">
+                    <img src="/imgs/My project.png" alt="">
+                    <h2>raphiScore</h2>
+                </a>
+                
+            </div>
+            <div class="right-nav">
+                <div id="myTopnav" class="inside-menu-nav">
+                    <div class="search">
+                        <form class="form-outline">
+                            <input type="text" id="search" placeholder="Search">
+                            <button type="submit">
+                                <i class='bx bx-search search-icon' style='color:#040404' ></i>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="hide-right-nav">
+                        <div class="dropdown"> 
+                            <button class="dropdown-button"> 
+                                <i class='bx bx-dots-vertical-rounded nav-more'></i>
+                            </button>
+                            <ul class="main-nav">
+                                <li>
+                                    <a href="/review">Review</a>    
+                                </li>
+                                <li>
+                                    <a href="/graphiscore">GPU'S</a>
+                                </li>
+                                <li>
+                                    <a href="">About</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- if login or not -->
+                        <% if (padala === "iflogin") { %>
+                            <%- include("user/iflogin"); -%>
+                        <% } else { %>
+                            <%- include("user/ifnotlogin"); -%>
+                        <% } %>   
+                        
+                    </div>
+            </div>
+            <i class="bx bx-menu nav-menu"></i> 
+            <i class='bx bx-x x-menu'></i>
+            </div>
+        </nav>
+        
+
+
+
+
+
+
+
+
+
+
