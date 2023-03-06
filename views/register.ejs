@@ -19,12 +19,13 @@
 </div>
 
 
-
-
-
-
-
-
-
+<% if (errors) { %>
+    <% errors.forEach(error => { %>
+      <script>
+        toastr.error("<%= error %>");
+      </script>
+    <% }); %>
+  <% } %>
+  
 
 <%- include('partials/footer'); -%>

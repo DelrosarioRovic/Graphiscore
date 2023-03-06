@@ -1,9 +1,16 @@
 <div class="user-container">
-    <a href="" id="myProfile"><%=displayName%></a>
-    <div class="user-login-container"></div>
+    <p id="myProfile"><%=displayName%></p>
+    <div class="user-login-container">
+        <% if (profilePicUrl) { %>
+            <img src="<%= profilePicUrl %>" alt="">
+        <% } else { %>
+            <img src="/imgs/My project.png" alt="">
+        <% } %>
+        
+    </div>
     <div class="dropdown-content-user">
-            <a href="#">Profile</a>
-            <a href="#">Account Settings</a>
+            <a href="/profile">Profile</a>
+            <a href="/account-setting">Account Settings</a>
             <a href="/logout" role="button">Sign Out</a>
     </div>
 </div>

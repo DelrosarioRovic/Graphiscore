@@ -1,0 +1,64 @@
+<%- include("partials/header"); -%>
+<div class="product-info">
+    <div class="prod-ratings-description">
+         <div class="prod-img">
+             <img src="data:image/png;base64, <%=productPrev[0].productImage%>" class="prod-img-size">
+         </div>
+     <div class="decription-title">
+         <h1><%= productPrev[0].productName %></h1>
+         <p><%= productPrev[0].productDscrp %></p>
+         <a href="/review/<%=productPrev[0]._id %>">Give your best rate</a>
+     </div>
+    </div>
+ <div class="rate_review">
+    <div class="rate__rev">
+     <div>
+         <span class="rating_rev"><%= productPrev[0].ratings %></span>
+         <span>people have rated this GPU</span>
+     </div>
+     <div>
+         <span class="rating_rev"><%= productPrev[0].totalReviews %></span>
+         <span>people have review this GPU</span>
+     </div>
+   </div>
+     <div class="rating-average">
+         <!-- <div class="star-rating"></div>  -->
+        <div>
+         <span class="average-value"><%= productPrev[0].average %></span>
+         <p>Average Rating</p>
+        </div>
+     </div>
+ </div>
+ <h1 class="rates-comment">Ratings & Reviews</h1>
+    <%productPrev[0].reviews.forEach(review => { %>
+            <div class="rates_reviews">
+                <a href="/profile/<%= review._id %>">
+                <div class="profile-size">
+                  <div class="profile-circle">
+                    <% if (review.profilePicUrl) { %>
+                        <img src="<%= review.profilePicUrl %>" alt="PIC" class="profile">
+                    <% } else { %>
+                        <img src="/imgs/My project.png" alt="PIC" class="profile">
+                    <% } %>
+                     
+                  </div>
+                 <div class="profile-name">
+                     <h3><%= review.displayName %></h3>
+                     
+                     <div class="star-rating-user"></div> 
+                     <span class="av-user"><%= review.rate %></span>
+                 </div>
+              </div>
+          
+              <div class="review-comment">
+                  <span><%= review.review %></span>
+              </div>
+                  <div class="time-date">
+                      <span><%= review.date %></span>
+                  </div>
+                </a>
+            </div>
+    <% }); %>
+
+ </div>
+<%- include('partials/footer'); -%>

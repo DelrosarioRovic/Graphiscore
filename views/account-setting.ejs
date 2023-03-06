@@ -1,0 +1,45 @@
+<%- include('partials/header'); -%>
+
+
+<div class="containers account_container">
+    <div class="accout_settings">
+        <form action="/account-setting" method="post">
+            
+            <div class="accont">
+                <i class='bx bxs-user-account user-account'></i>
+                <h1>Account Settings</h1>
+            </div>
+            <h3 class="accont_profile">Profile Picture</h3>
+
+            <div class="accout_img">
+                <div class="accont-img-upload">
+                    <% if (currentUser.user.profilePicUrl) { %>
+                        <img src="<%= currentUser.user.profilePicUrl %>" class="profile-picture">
+                      <% } else { %>
+                        <img src="/imgs/My project.png" alt="" class="profile-picture">
+                      <% } %>
+    
+                </div>
+                <!-- <input type="file" id="file" accept="img/*"> -->
+                <label for="file" class="choose_file"><i class='bx bxs-image-add'></i>Choose Photo</label>
+                <input type="text" name="profilePicUrl" id="profilePicUrl">
+            </div>
+
+            <div class="account_display">
+                <h3>Display Name</h3>
+                <input type="text" name="displayName" id="" value="<%= currentUser.user.displayName %>">
+                <h3>Bio</h3>
+                <% if (currentUser.user.bio) { %>
+                    <textarea name="bio" id=""><%=currentUser.user.bio %></textarea>
+                <% } else { %>
+                    <textarea name="bio" id="">Nice to meet you here on Graphiscore! I'm <%= currentUser.user.displayName %></textarea>
+                <% } %>
+            
+                <button type="submit">Update profile</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<%- include('partials/footer'); -%>

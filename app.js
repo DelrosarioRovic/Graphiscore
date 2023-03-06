@@ -7,14 +7,16 @@ const mongoose = require("mongoose");
 const passportLocalMongoose = require('passport-local-mongoose');
 const session = require('express-session');
 const passport = require('passport');
-const buffer = require('buffer');
-
+const flash = require('connect-flash');
 const fs = require('fs');
+const { validateHeaderName } = require("http");
+const toastr = require("toastr");
 const app = express();
 
 app.use(express.static("public"));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
+
 
 app.use(session({
   secret: "Our little secret.",
@@ -25,33 +27,28 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 mongoose.set('strictQuery', false);
-mongoose.connect('mongodb://127.0.0.1:27017/userDB',{ useNewUrlParser: true});
+mongoose.connect('mongodb+srv://Akocrovic123:Akocrovic123@mydb.jfyc7mf.mongodb.net/userDB',{ useNewUrlParser: true});
+// mongoose.connect('mongodb://127.0.0.1:27017/userDB',{ useNewUrlParser: true});
 
 // register user db
 const userSchema = new mongoose.Schema({
-  email: String,
+  username: String,
   password: String,
-  googleId: String,
-  secret: String,
-  displayName:String
+  displayName:String,
+  bio:String,
+  profilePicture: Buffer,
+  profilePicUrl: String
 });
 
 // product collections-------
 const productSchema = new mongoose.Schema({
   productName: String,
-  productImage: Buffer
+  productImage: Buffer,
+  productDscrp: String
 });
 const Product = mongoose.model("Product", productSchema);
 
-const g1 = new Product({
-  productName: "GTX-1660",
-  productImage: fs.readFileSync('public/imgs/My project.png')
-});
-// const geo = new Product({
-//   productName: "RTX 2060"
-// })
-// geo.save();
-// g1.save();
+
 // *-------------------------
 userSchema.plugin(passportLocalMongoose);
 // userSchema.plugin(findOrCreate);
@@ -71,16 +68,37 @@ passport.deserializeUser(function(id, done) {
 //relation between user and product
 const reviewSchema = new mongoose.Schema({
   review: String,
-  user: userSchema,
-  product: productSchema
+  rate: {
+    type: Number,
+    required: true
+  },
+  date: {
+    type: Date,
+    default: Date.now
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  product: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true
+  }
 });
+
 const Review = mongoose.model("Review", reviewSchema);
 
+
 app.use(express.json());
+app.use(flash());
 app.use(function(req, res, next) {
   if (req.isAuthenticated()) {
     res.locals.padala = "iflogin";
     res.locals.displayName = req.user.displayName;
+    res.locals.profilePicUrl = req.user.profilePicUrl;
+    
   } else {
     res.locals.padala = "ifnotlogin";
   }
@@ -99,12 +117,127 @@ function checkIfNotAuthenticated(req, res, next) {
   next();
 }
 
-app.get("/", function(req, res) {
- res.render("home");
+//search
+app.get('/search_bar', (req, res) => {
+  const displayName = req.query.displayName;
+  if (!displayName) {
+    return res.status(400).send('Missing search term');
+  }
+
+  // Search for users by displayName using the User model
+  User.find({ displayName: { $regex: new RegExp(displayName, 'i') } })
+    .then(users => {
+
+      res.json(users);
+    })
+    .catch(error => {
+      console.error(error);
+      res.status(500).send('Error searching for users');
+    });
 });
 
-app.get('/review', checkIfNotAuthenticated,function(req, res) {
-  res.render('review', { productName: '' });
+app.get("/", function(req, res) {
+  Review.aggregate([
+  {
+    $group: {
+      _id: "$product",
+      count: { $sum: { $cond: [{ $ne: ["$review", ""] }, 1, 0] } },
+      average: { $avg: "$rate" },
+      users: { $addToSet: "$user" }
+    }
+  },
+  {
+    $lookup: {
+      from: "products",
+      localField: "_id",
+      foreignField: "_id",
+      as: "product"
+    }
+  },
+  {
+    $unwind: "$product"
+  },
+    {
+      $project: {
+        _id: "$product._id",
+        productName: "$product.productName",
+        productDscrp: "$product.productDscrp",
+        productImage: "$product.productImage",
+        average: 1,
+        totalReviews: { $sum: "$count" },
+        ratings: { $size: "$users" }
+      }
+    },
+  {
+    $sort: { ratings: -1, count: -1 }
+  },
+  {
+    $limit: 5
+  }
+])
+.exec(function (err, results) {
+  if (err) {
+    // res.render("home");
+  } else {
+    results.forEach(function(product) {
+      if (product.productImage) {
+        product.productImage = product.productImage.toString('base64');
+      }
+      if (product.average) {
+        product.average = parseFloat(product.average.toFixed(1));
+      }
+    });
+
+    if (req.session.successfulLogin) {
+      req.session.successfulLogin = false; // Reset flag
+      var successMessage = "You have successfully logged in!";
+    }
+    res.render('home', { mostRated: results, successMessage: successMessage });
+  }
+});
+});
+
+app.get('/review-count', async function(req, res) {
+  const productId = req.query.id;
+  
+  const result = await Review.aggregate([
+  { $match: { 'product': mongoose.Types.ObjectId(productId) } },
+  {
+    $group: {
+      _id: '$user',
+      hasReview: { $sum: { $cond: [{ $ne: ['$review', ''] }, 1, 0] } },
+      hasRating: { $sum: { $cond: [{ $ne: ['$rate', ''] }, 1, 0] } },
+      avgRating: { $avg: '$rate' },
+    }
+  },
+  {
+    $group: {
+      _id: null,
+      reviewCount: { $sum: '$hasReview' },
+      rateCount: { $sum: '$hasRating' },
+      avgRating: { $avg: '$avgRating' },
+    }
+  }
+  ]).exec();
+
+  if (result[0] && result[0].avgRating) {
+    result[0].avgRating = parseFloat(result[0].avgRating.toFixed(1));
+  }
+
+  const resultObj = result[0] || { reviewCount: 0, rateCount: 0, avgRating: 0 };
+  res.json(resultObj);
+
+});
+
+app.get('/review', checkIfNotAuthenticated, function(req, res) {
+  productPrev = [{
+    productName: "",
+    totalReviews: "",
+    ratings: "",
+    average: "",
+    productImage: ""
+  }]
+  res.render('review' ,{productPrev: productPrev});
 });
 
 app.get("/graphiscore", function(req, res) {
@@ -112,30 +245,39 @@ app.get("/graphiscore", function(req, res) {
 });
 
 app.get("/login", checkAuthenticated, function(req, res) {
-  res.render("login");
+  const errors = req.flash().error || [];
+  res.render("login", { errors });
 });
 
 app.get("/register", checkAuthenticated, function(req, res) {
-  res.render("register");
+  const errors = req.flash("error") || [];
+  res.render("register", { errors });
 });
 
-
-
-
 app.post("/register", function(req, res) {
-  User.register({username: req.body.username, displayName: req.body.display_name}, req.body.password, function(err, user) {
-    if (err) {
-      console.log(err);
-      res.redirect("/register");  
+  User.findOne({username: req.body.username}, function(err, user) {
+    if (user) {
+      req.flash("error", "Username already exists");
+      res.redirect("/register");
     } else {
-        passport.authenticate("local")(req, res, function() {
-          req.session.padala = "iflogin";
-          req.session.displayName = req.user.displayName;
-          res.redirect("/");
-        });
+      User.register({username: req.body.username, displayName: req.body.display_name}, req.body.password, function(err, user) {
+        if (err) {
+          console.log(err);
+          req.flash("error", err.message);
+          res.redirect("/register");
+        } else {
+          passport.authenticate("local")(req, res, function() {
+            req.session.padala = "iflogin";
+            req.session.displayName = req.user.displayName;
+            req.session.profilePicUrl = req.user.profilePicUrl;
+            res.redirect("/");
+          });
+        }
+      });
     }
   });
 });
+
 app.post("/login", function(req, res) {
   const user = new User ({
     username: req.body.username,
@@ -146,9 +288,11 @@ req.login(user, function(err) {
     if (err) {
         console.log(err);
     } else {
-        passport.authenticate("local", { failureRedirect: '/login' })(req, res, function() {
+        passport.authenticate("local", { failureFlash:true ,failureRedirect: '/login', })(req, res, function() {
+          req.session.successfulLogin = true;
           req.session.padala = "iflogin";
           req.session.displayName = req.user.displayName;
+          req.session.profilePicUrl = req.user.profilePicUrl;
           res.redirect("/");
         });
     }
@@ -167,17 +311,6 @@ app.get("/logout", function(req, res) {
     });
 });
 
-// app.get('/search', (req, res) => {
-//   const searchTerm = req.query.q;
-
-//   Product.find({ productName: { $regex: searchTerm, $options: 'i' } }, (err, products) => {
-//     if (err) {
-//       console.log(err);
-//     } else {
-//       res.send(products);
-//     }
-//   });
-// });
 app.get('/search', (req, res) => {
   const searchTerm = req.query.q;
   let query = {};
@@ -185,10 +318,16 @@ app.get('/search', (req, res) => {
     query.productName = { $regex: searchTerm, $options: 'i' };
   }
   Product.find(query, (err, products) => {
+    console.log(products);
     if (err) {
       console.log(err);
     } else {
-      res.send(products);
+      const productData = products.map(product => ({
+        _id: product._id,
+        productName: product.productName,
+        productImage: product.productImage.toString('base64')
+      }));
+      res.send(productData);
     }
   });
 });
@@ -197,29 +336,14 @@ app.get('/allproducts', (req, res) => {
   Product.find({}, (err, products) => {
     if (err) {
       console.log(err);
+      res.sendStatus(500);
     } else {
-      res.send(products);
-    }
-  });
-});
-
-app.post('/fetchingproduct', (req, res) => {
-  const productId = req.body.productId;
-  Product.findById(productId, function(err, foundProduct) {
-    if (err) {
-      console.log(err);
-      res.status(500).json({ error: 'Server error' });
-    } else {
-      if (foundProduct) {
-        // console.log(foundProduct);
-        const product = {
-          productName: foundProduct.productName,
-          productImage: foundProduct.productImage.toString('base64')
-        };
-        res.json({ productName: product });
-      } else {
-        res.status(404).json({ error: 'Product not found' });
-      }
+      const productData = products.map(product => ({
+        _id: product._id,
+        productName: product.productName,
+        productImage: product.productImage.toString('base64')
+      }));
+      res.send(productData);
     }
   });
 });
@@ -227,16 +351,293 @@ app.post('/fetchingproduct', (req, res) => {
 app.post("/review", async (req, res) => {
   const productName= req.body.search_product_review;
   const productReview = req.body.review_product;
- Product.findOne({productName: productName}, function(err, foundProduct) {
-    const newReview = new Review({
-      review: productReview,
+  const rateStar = req.body.rate;
+
+  const foundProduct = await Product.findOne({ productName: productName });
+  
+  if (foundProduct) {
+    const existingReview = await Review.findOne({
       user: req.user,
-      product: foundProduct
+      product: foundProduct,
     });
-    newReview.save();
+    
+    if (existingReview) {
+      existingReview.review = productReview;
+      existingReview.rate = rateStar;
+      existingReview.save(function (err) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Success update");
+          res.redirect("/graphiscore/"+foundProduct._id);
+        }
+      });
+    }
+    else {
+      const newReview = new Review({
+        review: productReview,
+        rate: rateStar,
+        user: req.user,
+        product: foundProduct
+      });
+  
+      newReview.save(function (err) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Success add");
+          res.redirect("/graphiscore/"+foundProduct._id);
+        }
+      });
+    }
+  } else {
+    console.log("User not found!!!");
+  }
+});
+
+app.get("/graphiscore/:_id", function(req, res){
+  let getUrl = req.params._id;
+
+  Product.aggregate()
+    .match({ _id: mongoose.Types.ObjectId(getUrl) })
+    .lookup({
+      from: "reviews",
+      let: { productId: "$_id" },
+      pipeline: [
+        {
+          $match: {
+            $expr: { $eq: ["$product", "$$productId"] }
+          }
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "user",
+            foreignField: "_id",
+            as: "userObj"
+          }
+        },
+        {
+          $unwind: "$userObj"
+        },
+        {
+          $project: {
+            _id: "$user",
+            displayName: "$userObj.displayName",
+            profilePicUrl: "$userObj.profilePicUrl",
+            rate: "$rate",
+            review: "$review",
+            date: "$date"
+          }
+        }
+      ],
+      as: "reviews"
+    })
+    .project({
+      _id: 1,
+      productName: 1,
+      productDscrp: 1,
+      productImage: 1,
+      average: {
+        $avg: "$reviews.rate"
+      },
+      totalReviews: {
+        $size: {
+        $filter: {
+        input: "$reviews",
+        as: "review",
+        cond: { $ne: ["$$review.review", ""] }
+         }
+        }
+      },
+      ratings: {
+        $size: {
+          $setUnion: ["$reviews._id"]
+        }
+      },
+      reviews: 1
+    })  
+  .exec((err, productPrev) => {
+    if (productPrev.length === 0) {
+      res.render("error", { message: "Product not found" });
+    } else {
+      if (productPrev[0].productImage) {
+        productPrev[0].productImage = productPrev[0].productImage.toString('base64');
+      }
+      if (productPrev[0].average) {
+        productPrev[0].average = parseFloat(productPrev[0].average.toFixed(1));
+      }
+      productPrev[0].reviews.forEach(element => {
+        if (element.date) {
+          element.date = element.date.toLocaleString("en-US", {
+            month: "2-digit",
+            day: "2-digit",
+            year: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+            hour12: true,
+          });
+        }
+      });
+      res.render("product", { productPrev: productPrev });
+    }
+  });
+
+});
+
+app.get("/review/:_id", checkIfNotAuthenticated, function(req, res){
+  const getUrl = req.params._id;
+  Review.aggregate([
+    {
+      $match: { product: mongoose.Types.ObjectId(getUrl) }
+    },
+    {
+      $group: {
+        _id: "$product",
+        count: { $sum: { $cond: [{ $ne: ["$review", ""] }, 1, 0] } },
+        average: { $avg: "$rate" },
+        users: { $addToSet: "$user" },
+      }
+    },
+    {
+      $lookup: {
+        from: "products",
+        localField: "_id",
+        foreignField: "_id",
+        as: "product"
+      }
+    },
+    {
+      $unwind: "$product"
+    },
+    {
+      $project: {
+        _id: "$product._id",
+        productName: "$product.productName",
+        productImage: "$product.productImage",
+        average: { $round: ["$average", 1] },
+        totalReviews: { $sum: "$count" },
+        ratings: { $size: "$users" },
+        reviews: 1
+      }
+    }
+  ])
+  .exec((err, productPrev) => {
+    if (err) {
+      console.error(err);
+    } else {
+      if (productPrev[0].productImage) {
+        productPrev[0].productImage = productPrev[0].productImage.toString('base64');
+      }
+      res.render("review", { productPrev: productPrev });
+    }
+  });
+
+});
+
+async function account(id) {
+  try {
+    const user = await User.findById(id)
+    const reviews = await Review.find({ user: id })
+      .populate("product", "productName productImage")
+      .select("rate review date")
+      .lean();
+
+    // format date and base64 encode product image
+    reviews.forEach((review) => {
+      if (review.product.productImage) {
+        review.product.productImage = review.product.productImage.toString("base64");
+      }
+      if (review.date) {
+        review.date = review.date.toLocaleString("en-US", {
+          month: "2-digit",
+          day: "2-digit",
+          year: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
+          hour12: true,
+        });
+      }
+    });
+
+    const reviewCount = await Review.countDocuments({ user: id, review: { $exists: true, $ne: "" } })
+    const rateCount = await Review.countDocuments({ user: id, rate: { $exists: true } })
+    return {
+      user: {
+        displayName: user.displayName,
+        bio: user.bio,
+        profilePicUrl: user.profilePicUrl
+      },
+      reviewCount,
+      rateCount,
+      reviews
+    }
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+app.get("/profile", checkIfNotAuthenticated, function(req, res) {
+  const userId = req.user._id;
+  
+  account(userId).then((currentUser) => {
+    res.render('profile', {
+      currentUser: currentUser,
+      hideButtons: false
+    });
+  }).catch((err) => {
+    console.log(err);
+    res.redirect('/');
   });
 });
 
-app.listen(3000, function() {
+
+// other users profile with search
+app.get("/profile/:_id", function(req, res) {
+  let getUrl = req.params._id;
+  User.findById(getUrl, function(err, foundId) {
+    account(foundId._id)
+  
+  .then((result) => { 
+    res.render("profile", { currentUser: result, hideButtons: true });
+  })
+  .catch((error) => {
+    console.log(error);
+    res.render("error");
+  });
+  })
+});
+
+app.get("/account-setting", function(req, res) {
+  let getUrl = req.user._id;
+
+  account(getUrl)
+  .then((result) => {
+    res.render("account-setting", { currentUser:result });
+  })
+  .catch((error) => {
+    console.log(error);
+    res.render("error");
+  });
+  });
+
+app.post("/account-setting", async (req, res) => {
+  const { displayName, bio, profilePicUrl } = req.body;
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { displayName, bio, profilePicUrl},
+    { new: true }
+  );
+  res.redirect("/profile");
+});
+
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 3000;
+}
+
+app.listen(port, function() {
   console.log("Server started on port 3000");
 });

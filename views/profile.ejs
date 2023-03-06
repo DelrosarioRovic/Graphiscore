@@ -1,0 +1,64 @@
+<%- include('partials/header'); -%>
+
+<div class="containers">
+  <div class="profile_settings">
+    <div class="profile_settings_picture">
+      <% if (currentUser.user.profilePicUrl) { %>
+        <img src="<%= currentUser.user.profilePicUrl %>" class="profile_settings_img">
+      <% } else { %>
+        <img src="/imgs/My project.png" alt="" class="profile_settings_img">
+      <% } %>
+    </div>
+    <div class="profile_settings_name">
+      <p><%= currentUser.user.displayName %></p>
+    </div>
+
+    <div class="profile_settings_link" <% if (hideButtons) { %>style="display: none;"<% } %>>
+      <a href=""><i class='bx bx-edit profile_icons'></i>Edit profile</a>
+      <a href=""><i class='bx bx-share profile_icons'></i>Share profile</a>
+    </div>
+    <p class="profile_settings_bio">
+      <%if (!currentUser.user.bio) { %>
+        Nice to meet you here on GraphiScore! I'm <%= currentUser.user.displayName %>
+      <% } else { %>  
+        <%= currentUser.user.bio %>
+      <% } %>
+    </p>
+
+    <div class="profile_settings_revrate">
+      <div>
+        <h1><%= currentUser.reviewCount %></h1>
+        <p>Reviews</p>
+      </div>
+      <div>
+        <h1><%= currentUser.rateCount %></h1>
+        <p>Ratings</p>
+      </div>
+    </div>
+
+    <h1 class="Activty">Activity</h1>
+
+    <% currentUser.reviews.forEach((review) => { %>
+      <a href="/graphiscore/<%= review.product._id %>" class="user-rated-product">
+        <div class="profile_activty">
+          <div class="profile_activty_img">
+            <img src="data:image/png;base64, <%= review.product.productImage %>" alt="" class="activty_img">
+          </div>
+          <div class="profile_activty_description">
+            <div class="profile_activty_name">
+              <h2><%= review.product.productName %></h2>
+              <div class="profile_activity_average"> 
+                <span class="star-rating-useracc"></span>
+                <span class="av-user-account"><%= review.rate %></span>
+              </div>
+            </div>
+            <p class="activty_description"><%= review.review %></p>
+            <p class="activty_datetime"><%= review.date %></p>
+          </div>
+        </div>
+      </a>
+    <% }); %>
+  </div>
+</div>
+
+<%- include('partials/footer'); -%>

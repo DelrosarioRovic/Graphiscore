@@ -48,72 +48,44 @@
             </div>
           </div>
     </div>
+
     <div class="content-wrapper">
       <div class="rated-products-container">
         <h3>Most rate/review GPU Products</h3>
         <div class="group-product">
-          <div class="rated-product">
-            <img src="/imgs/imagegpu-2.jpg" alt="">
-            <p>Product Name</p>
-            <p>
-              Mid-range graphics card for gaming and graphics-intensive tasks. 6GB GDDR6
-              memory, 1408 CUDA cores, and faster clock speeds than the GTX 1660. Ideal for 1080p gaming and some 1440p games.
-            </p>
-            <ul>
-              <p>Reviews(1)</p>  
-              <p>⭐⭐⭐⭐⭐ 5.0(2)</p> 
-            </ul>
-          </div>
-  
-          <div class="rated-product">
-            <img src="/imgs/imagegpu-2.jpg" alt="">
-            <p>Product Name</p>
-            <p>
-              Mid-range graphics card for gaming and graphics-intensive tasks. 6GB GDDR6
-              memory, 1408 CUDA cores, and faster clock speeds than the GTX 1660. Ideal for 1080p gaming and some 1440p games.
-            </p>
-            <ul>
-              <p>Reviews(1)</p>  
-              <p>⭐⭐⭐⭐⭐ 5.0(2)</p> 
-            </ul>
-          </div>
-
-          <div class="rated-product">
-            <img src="/imgs/imagegpu-2.jpg" alt="">
-            <p>Product Name</p>
-            <p>
-              Mid-range graphics card for gaming and graphics-intensive tasks. 6GB GDDR6
-              memory, 1408 CUDA cores, and faster clock speeds than the GTX 1660. Ideal for 1080p gaming and some 1440p games.
-            </p>
-            <ul>
-              <p>Reviews(1)</p>  
-              <p>⭐⭐⭐⭐⭐ 5.0(2)</p> 
-            </ul>
-          </div>
-
-          <div class="rated-product">
-            <img src="/imgs/imagegpu-2.jpg" alt="">
-            <p>Product Name</p>
-            <p>
-              Mid-range graphics card for gaming and graphics-intensive tasks. 6GB GDDR6
-              memory, 1408 CUDA cores, and faster clock speeds than the GTX 1660. Ideal for 1080p gaming and some 1440p games.
-            </p>
-            <ul>
-              <p>Reviews(1)</p>  
-              <p>⭐⭐⭐⭐⭐ 5.0(2)</p> 
-            </ul>
-          </div>
+          <% for (var i = 0; i < mostRated.length; i++) { %>
+            <a href="/graphiscore/<%=mostRated[i]._id%>" class="rated-product">
+              <div>
+                <img src="data:image/png;base64, <%=mostRated[i].productImage%>" alt="">
+                <h4><%= mostRated[i].productName %></h4>
+                <p><%= mostRated[i].productDscrp.substring(0, 200) %></p>
+              </div>
+              <p>Reviews (<%= mostRated[i].totalReviews %>)</p>  
+              <ul>
+                <div class="star-rating-home"></div>
+                <p class="av-home"><%= mostRated[i].average %></p> 
+                <p>(<%= mostRated[i].ratings %>)</p>
+              </ul>
+            </a>
+          <% } %>
         </div>
-
       </div>
 
       <div class="news">
         <h3>📄 TODAY'S NEWS</h3>
         <img src="/imgs/gtx-img2.jpg" alt="">
-        <p>NVIDIA has officially announced the release of their new RTX 3080 Ti graphics card, which is a more powerful version of their popular RTX 3080 card.
-           The RTX 3080 Ti boasts impressive specifications, including 10,240 CUDA cores, 12GB of GDDR6X memory, and a boost clock speed of 1.67 GHz.</p>
+        <p>NVIDIA has officially announced the release of their new RTX 3080 Ti graphics card, which is a more powerful version of their popular RTX 3080 card.</p>
       </div>
     </div>
 
+   
+   
+    <% if (successMessage) { %>
+      <script>
+         toastr.success("<%= successMessage %>");
+      </script>
+    <% } %>
     
+
+
 <%- include('partials/footer'); -%>
