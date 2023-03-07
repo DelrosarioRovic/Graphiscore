@@ -38,8 +38,10 @@
             <div>
                 <div>
                     <h3 id="product-name"><%= productPrev[0].productName %></h3>
-                    <div class="star-rating-review"></div>
-                    <p id="av"><%= productPrev[0].average %></p>
+                    <div>
+                        <div class="star-rating-review"></div>
+                        <p id="av"><%= productPrev[0].average %></p>
+                    </div>
                 </div>
                 <div>
                     <% if (productPrev[0].ratings ==="") { %>
@@ -54,4 +56,13 @@
             </div>
         </div>
     </div>
+
+    <% if (errors) { %>
+        <% errors.forEach(error => { %>
+          <script>
+            toastr.options.positionClass = "toast-bottom-right";
+            toastr.error("<%= error %>");
+          </script>
+        <% }); %>
+      <% } %>
 <%- include('partials/footer'); -%>

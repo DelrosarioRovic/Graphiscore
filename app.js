@@ -27,8 +27,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 mongoose.set('strictQuery', false);
-mongoose.connect('mongodb+srv://Akocrovic123:Akocrovic123@mydb.jfyc7mf.mongodb.net/userDB',{ useNewUrlParser: true});
-// mongoose.connect('mongodb://127.0.0.1:27017/userDB',{ useNewUrlParser: true});
+// mongoose.connect('mongodb+srv://Akocrovic123:Akocrovic123@mydb.jfyc7mf.mongodb.net/userDB',{ useNewUrlParser: true});
+mongoose.connect('mongodb://127.0.0.1:27017/userDB',{ useNewUrlParser: true});
 
 // register user db
 const userSchema = new mongoose.Schema({
@@ -44,7 +44,8 @@ const userSchema = new mongoose.Schema({
 const productSchema = new mongoose.Schema({
   productName: String,
   productImage: Buffer,
-  productDscrp: String
+  productDscrp: String,
+  productImgUrl: String
 });
 const Product = mongoose.model("Product", productSchema);
 
@@ -70,7 +71,8 @@ const reviewSchema = new mongoose.Schema({
   review: String,
   rate: {
     type: Number,
-    required: true
+    required: [true, 'Please Leave a Rating!'],
+    message: 'Please Leave a Rating!'
   },
   date: {
     type: Date,
@@ -112,6 +114,7 @@ function checkAuthenticated(req, res, next) {
 } 
 function checkIfNotAuthenticated(req, res, next) {
   if (!req.isAuthenticated()) {
+    req.flash("error", "Please Log In to Access This Page!");
     return res.redirect('/login');
   }
   next();
@@ -237,12 +240,58 @@ app.get('/review', checkIfNotAuthenticated, function(req, res) {
     average: "",
     productImage: ""
   }]
-  res.render('review' ,{productPrev: productPrev});
+  const errors = req.flash("error") || [];
+  res.render('review' ,{productPrev: productPrev, errors});
 });
+
+
+app.get("/products", async function(req, res) {
+  try {
+    const products = await Product.find();
+    const productsWithRating = [];
+
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+      const reviews = await Review.find({ product: product._id });
+
+      let totalRating = 0;
+      let totalReview = 0;
+      let numReviews = 0;
+
+      for (let j = 0; j < reviews.length; j++) {
+        const review = reviews[j];
+        if (review.rate && review.rate !== "") {
+          totalRating += parseInt(review.rate);
+          numReviews++;
+        }
+        if (review.review && review.review !== "") {
+          totalReview++;
+        }
+      }
+
+      let averageRating = numReviews > 0 ? totalRating / numReviews : 0;
+
+      productsWithRating.push({
+        _id: product._id,
+        productName: product.productName,
+        productDscrp: product.productDscrp,
+        numReviews: numReviews,
+        averageRating: averageRating.toFixed(1),
+        totalReview: totalReview
+      });
+    }
+    console.log(productsWithRating)
+    res.json(productsWithRating);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 
 app.get("/graphiscore", function(req, res) {
   res.render("graphiscore");
 });
+
 
 app.get("/login", checkAuthenticated, function(req, res) {
   const errors = req.flash().error || [];
@@ -257,7 +306,7 @@ app.get("/register", checkAuthenticated, function(req, res) {
 app.post("/register", function(req, res) {
   User.findOne({username: req.body.username}, function(err, user) {
     if (user) {
-      req.flash("error", "Username already exists");
+      req.flash("error", "Email Already Exists!");
       res.redirect("/register");
     } else {
       User.register({username: req.body.username, displayName: req.body.display_name}, req.body.password, function(err, user) {
@@ -364,11 +413,14 @@ app.post("/review", async (req, res) => {
     if (existingReview) {
       existingReview.review = productReview;
       existingReview.rate = rateStar;
+
       existingReview.save(function (err) {
         if (err) {
-          console.log(err);
+          const message = err.message.split(':')[2].trim();
+          req.flash("error", message);
+          res.redirect(req.headers.referer || "/review");
         } else {
-          console.log("Success update");
+          req.flash("success", "Review Updated!");
           res.redirect("/graphiscore/"+foundProduct._id);
         }
       });
@@ -383,15 +435,18 @@ app.post("/review", async (req, res) => {
   
       newReview.save(function (err) {
         if (err) {
-          console.log(err);
+          const message = err.message.split(':')[2].trim();
+          req.flash("error", message);
+          res.redirect(req.headers.referer || "/review");
         } else {
-          console.log("Success add");
+          req.flash("success", "New Review Added!");
           res.redirect("/graphiscore/"+foundProduct._id);
         }
       });
     }
   } else {
-    console.log("User not found!!!");
+    req.flash("error", "Please Select a GPU!");
+    res.redirect("/review");
   }
 });
 
@@ -480,7 +535,8 @@ app.get("/graphiscore/:_id", function(req, res){
           });
         }
       });
-      res.render("product", { productPrev: productPrev });
+      const success = req.flash("success") || [];
+      res.render("product", { productPrev: productPrev, success });
     }
   });
 
@@ -530,7 +586,8 @@ app.get("/review/:_id", checkIfNotAuthenticated, function(req, res){
       if (productPrev[0].productImage) {
         productPrev[0].productImage = productPrev[0].productImage.toString('base64');
       }
-      res.render("review", { productPrev: productPrev });
+      const errors = req.flash("error") || [];
+      res.render("review", { productPrev: productPrev, errors });
     }
   });
 
@@ -610,7 +667,7 @@ app.get("/profile/:_id", function(req, res) {
   })
 });
 
-app.get("/account-setting", function(req, res) {
+app.get("/account-setting",checkIfNotAuthenticated, function(req, res) {
   let getUrl = req.user._id;
 
   account(getUrl)
@@ -630,6 +687,7 @@ app.post("/account-setting", async (req, res) => {
     { displayName, bio, profilePicUrl},
     { new: true }
   );
+
   res.redirect("/profile");
 });
 

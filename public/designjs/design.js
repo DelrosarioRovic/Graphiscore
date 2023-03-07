@@ -275,6 +275,64 @@ try {
   console.log(error);
 }
 
+
+
+const searchGpu = document.getElementById("search-product-gpu");
+const productList = document.getElementById("product-list");
+let products = [];
+
+async function getProducts() {
+  try {
+    const response = await fetch("/products");
+    products = await response.json();
+    renderProducts(products);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+function renderProducts(productsToRender) {
+  let productHTML = "";
+  productsToRender.forEach(function(product) {
+    productHTML += `
+      <div class="product-div">
+        <h2 class="product-name">${product.productName}</h2>
+        <p class="product-rate">${product.numReviews}</p>
+        <p class="product-totalReview">${product.totalReview}</p>
+        <p class="product-aver">${product.averageRating}</p>
+      </div>
+    `;
+  });
+
+  productList.innerHTML = productHTML;
+}
+
+function filterProducts() {
+  const searchQuery = searchGpu.value.trim().toLowerCase();
+  let filteredProducts = [];
+
+  if (searchQuery !== "") {
+    filteredProducts = products.filter(function(product) {
+      const productName = product.productName.toLowerCase();
+      const productDescription = product.productDscrp.toLowerCase();
+
+      return productName.includes(searchQuery) || productDescription.includes(searchQuery);
+    });
+  } else {
+    filteredProducts = products;
+  }
+
+  if (filteredProducts.length > 0) {
+    renderProducts(filteredProducts);
+  } else {
+    productList.innerHTML = "<p>No products found.</p>";
+  }
+}
+
+getProducts();
+searchGpu.addEventListener("input", filterProducts);
+
+
 //loading text animation
 try {
   function applySkeletonLoading(id) {

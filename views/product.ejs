@@ -61,4 +61,11 @@
     <% }); %>
 
  </div>
+ <% success.forEach(element => { %>
+    <script>
+       toastr.options.positionClass = "toast-bottom-right";
+       toastr.success("<%= element %>");
+    </script>
+ <% }); %>
+
 <%- include('partials/footer'); -%>

@@ -82,7 +82,8 @@
    
     <% if (successMessage) { %>
       <script>
-         toastr.success("<%= successMessage %>");
+        toastr.options.positionClass = "toast-bottom-right";
+        toastr.success("<%= successMessage %>");
       </script>
     <% } %>
     
