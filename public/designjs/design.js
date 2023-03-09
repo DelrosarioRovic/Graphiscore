@@ -28,17 +28,26 @@ xButton.onclick = function() {
 
 //expand search bar to 100% and hide others
 const searchBar = document.querySelector("#search");
+const searchclass= document.querySelector(".search");
 const search_Result_main = document.getElementById('search-results-bar');
-document.querySelector("#search").addEventListener('click', function() {
+const searchX = document.querySelector(".search-delete");
+searchclass.addEventListener('click', function() {
   document.querySelector(".hide-right-nav").classList.add("if-press-hide");
   document.querySelector(".right-nav").style.width = "100%";
+  searchX.style.display = "block";
+});
+searchX.addEventListener("click", function() {
+  search_Result_main.innerHTML = "";
+  searchBar.value = "";
+  searchBar.focus();
 });
 document.addEventListener("click", function(event){
-  if (!searchBar.contains(event.target)) {
+  if (!searchclass.contains(event.target)) {
     document.querySelector(".hide-right-nav").classList.remove("if-press-hide");
     search_Result_main.innerHTML = "";
     searchBar.value = "";
     search_Result_main.style.display = "none";
+    searchX.style.display = "none";
   }
 });
 //search function
@@ -55,26 +64,30 @@ searchBar.addEventListener('input', () => {
         search_Result_main.innerHTML = '';
 
         // Render the search results
-        users.forEach(user => {
-          search_Result_main.style.display = "flex";
-          const userLink = document.createElement('a');
-          const userText = document.createElement('p');
-          userLink.href = "/profile/" + user._id; // Replace with your own URL format
-          userText.textContent = user.displayName;
+        if (users.length > 0) {
+          users.forEach(user => {
+            search_Result_main.style.display = "flex";
+            const userLink = document.createElement('a');
+            const userText = document.createElement('p');
+            userLink.href = "/profile/" + user._id; // Replace with your own URL format
+            userText.textContent = user.displayName;
 
-          if (user.profilePicUrl) {
-            const primgSearch = document.createElement('img');
-            primgSearch.src = user.profilePicUrl;
-            userLink.appendChild(primgSearch);
-          }
-          else {
-            const primgSearch = document.createElement('img');
-            primgSearch.src = "/imgs/login.jpg";
-            userLink.appendChild(primgSearch);
-          }           
-          userLink.appendChild(userText);
-          search_Result_main.appendChild(userLink);
-        });                      
+            if (user.profilePicUrl) {
+              const primgSearch = document.createElement('img');
+              primgSearch.src = user.profilePicUrl;
+              userLink.appendChild(primgSearch);
+            }
+            else {
+              const primgSearch = document.createElement('img');
+              primgSearch.src = "/imgs/login.jpg";
+              userLink.appendChild(primgSearch);
+            }           
+            userLink.appendChild(userText);
+            search_Result_main.appendChild(userLink);
+          });
+        } else {
+          search_Result_main.innerHTML = 'Item not found';
+        }                      
       })
       .catch(error => {
         console.error(error);
@@ -85,6 +98,7 @@ searchBar.addEventListener('input', () => {
     search_Result_main.innerHTML = '';
   }
 });
+
 
 
 
@@ -115,10 +129,6 @@ window.addEventListener('resize', () => {
 } catch (error) {
   
 }
-
-
-
-
 
 //star rate
 const rateComment = document.getElementById('rate-comment');
@@ -160,6 +170,7 @@ insertRatingHTML(".rating-average");
 insertRatingHTML(".star-rating-review");
 insertRatingHTML(".star-rating-useracc");
 
+
 function StarAverageRating(graphicsStar, average) {
   for (let index = 0; index < average.length; index++) {
     let ratings = parseFloat(average[index].textContent);
@@ -195,6 +206,8 @@ StarAverageRating(ratingUpper3, ratingElement3);
 const ratingUpper5 = document.querySelectorAll(".star-rating-useracc .rating-upper");
 const ratingElement5 = document.querySelectorAll(".av-user-account");
 StarAverageRating(ratingUpper5, ratingElement5);
+
+
 
 // ----------------------------------------
   
@@ -259,10 +272,10 @@ try {
 
         const productName = productResult.textContent;
         const product = products.find(p => p.productName === productName);
-        const productImage = product.productImage;
+        const productImgUrl = product.productImgUrl;
         reviewContainer.querySelector('h3').textContent = productName;
         const img = reviewContainer.querySelector("img");
-        img.setAttribute('src', `data:image/png;base64,${productImage}`);
+        img.setAttribute('src', productImgUrl);
         img.setAttribute('alt', productName); 
       
         searchInput.setAttribute('placeholder', productName);  
@@ -286,9 +299,7 @@ async function getProducts() {
     const response = await fetch("/products");
     products = await response.json();
     renderProducts(products);
-  } catch (err) {
-    console.log(err);
-  }
+  } catch (err) {}
 }
 
 function renderProducts(productsToRender) {
@@ -296,41 +307,57 @@ function renderProducts(productsToRender) {
   productsToRender.forEach(function(product) {
     productHTML += `
       <div class="product-div">
-        <h2 class="product-name">${product.productName}</h2>
-        <p class="product-rate">${product.numReviews}</p>
-        <p class="product-totalReview">${product.totalReview}</p>
-        <p class="product-aver">${product.averageRating}</p>
+        <a href="/graphiscore/${product._id}">
+          <img src ="${product.productImgUrl}" class="gpus-img">
+          <h2 class="product-name">${product.productName}</h2>
+          <p class="product-rate">Ratings ${product.numReviews}</p>
+          <p class="product-totalReview">Reviews ${product.totalReview}</p>
+          <div class="star-rating-gpu"></div>
+          <p class="product-aver">${product.averageRating}</p>
+        </a>
       </div>
     `;
   });
 
   productList.innerHTML = productHTML;
+
+  // user account graphiscore averating graphics rating
+  insertRatingHTML(".star-rating-gpu");
+  const ratingUpper6 = document.querySelectorAll(".star-rating-gpu .rating-upper");
+  const ratingElement6 = document.querySelectorAll(".product-aver");
+  StarAverageRating(ratingUpper6, ratingElement6);
 }
-
-function filterProducts() {
-  const searchQuery = searchGpu.value.trim().toLowerCase();
-  let filteredProducts = [];
-
-  if (searchQuery !== "") {
-    filteredProducts = products.filter(function(product) {
-      const productName = product.productName.toLowerCase();
-      const productDescription = product.productDscrp.toLowerCase();
-
-      return productName.includes(searchQuery) || productDescription.includes(searchQuery);
-    });
-  } else {
-    filteredProducts = products;
+try {
+  function filterProducts() {
+    const searchQuery = searchGpu.value.trim().toLowerCase();
+    let filteredProducts = [];
+  
+    if (searchQuery !== "") {
+      filteredProducts = products.filter(function(product) {
+        const productName = product.productName.toLowerCase();
+        const productDescription = product.productDscrp.toLowerCase();
+        
+        return productName.includes(searchQuery) || productDescription.includes(searchQuery);
+      });
+    } else {
+      filteredProducts = products;
+    }
+  
+    if (filteredProducts.length > 0) {
+      renderProducts(filteredProducts);
+    } else {
+      productList.innerHTML = "<p>No products found.</p>";
+    }
   }
-
-  if (filteredProducts.length > 0) {
-    renderProducts(filteredProducts);
-  } else {
-    productList.innerHTML = "<p>No products found.</p>";
-  }
-}
-
 getProducts();
 searchGpu.addEventListener("input", filterProducts);
+
+
+} catch (error) {}
+
+
+
+
 
 
 //loading text animation
@@ -362,13 +389,13 @@ try {
     const element = document.querySelector(id);
   
     // Add the skeleton class to the element if it's empty
-    if (element.src ==="data:image/png;base64,") {
+    if (element.src ==="") {
       element.classList.add('skeleton-img');
     }
   
     // Remove the skeleton class when the element's <p> element has content
     element.addEventListener('DOMSubtreeModified', () => {
-      if (element.src !=="data:image/png;base64,") {
+      if (element.src !=="") {
         element.classList.remove('skeleton-img');
       }
     });

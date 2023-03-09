@@ -42,7 +42,7 @@
       <a href="/graphiscore/<%= review.product._id %>" class="user-rated-product">
         <div class="profile_activty">
           <div class="profile_activty_img">
-            <img src="data:image/png;base64, <%= review.product.productImage %>" alt="" class="activty_img">
+            <img src="<%= review.product.productImgUrl %>" alt="" class="activty_img">
           </div>
           <div class="profile_activty_description">
             <div class="profile_activty_name">

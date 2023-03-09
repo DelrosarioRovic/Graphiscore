@@ -43,7 +43,6 @@ const userSchema = new mongoose.Schema({
 // product collections-------
 const productSchema = new mongoose.Schema({
   productName: String,
-  productImage: Buffer,
   productDscrp: String,
   productImgUrl: String
 });
@@ -165,7 +164,7 @@ app.get("/", function(req, res) {
         _id: "$product._id",
         productName: "$product.productName",
         productDscrp: "$product.productDscrp",
-        productImage: "$product.productImage",
+        productImgUrl: "$product.productImgUrl",
         average: 1,
         totalReviews: { $sum: "$count" },
         ratings: { $size: "$users" }
@@ -183,9 +182,6 @@ app.get("/", function(req, res) {
     // res.render("home");
   } else {
     results.forEach(function(product) {
-      if (product.productImage) {
-        product.productImage = product.productImage.toString('base64');
-      }
       if (product.average) {
         product.average = parseFloat(product.average.toFixed(1));
       }
@@ -238,7 +234,7 @@ app.get('/review', checkIfNotAuthenticated, function(req, res) {
     totalReviews: "",
     ratings: "",
     average: "",
-    productImage: ""
+    productImgUrl: ""
   }]
   const errors = req.flash("error") || [];
   res.render('review' ,{productPrev: productPrev, errors});
@@ -277,10 +273,10 @@ app.get("/products", async function(req, res) {
         productDscrp: product.productDscrp,
         numReviews: numReviews,
         averageRating: averageRating.toFixed(1),
-        totalReview: totalReview
+        totalReview: totalReview,
+        productImgUrl: product.productImgUrl
       });
     }
-    console.log(productsWithRating)
     res.json(productsWithRating);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -367,16 +363,10 @@ app.get('/search', (req, res) => {
     query.productName = { $regex: searchTerm, $options: 'i' };
   }
   Product.find(query, (err, products) => {
-    console.log(products);
     if (err) {
       console.log(err);
     } else {
-      const productData = products.map(product => ({
-        _id: product._id,
-        productName: product.productName,
-        productImage: product.productImage.toString('base64')
-      }));
-      res.send(productData);
+      res.send(products);
     }
   });
 });
@@ -387,12 +377,7 @@ app.get('/allproducts', (req, res) => {
       console.log(err);
       res.sendStatus(500);
     } else {
-      const productData = products.map(product => ({
-        _id: product._id,
-        productName: product.productName,
-        productImage: product.productImage.toString('base64')
-      }));
-      res.send(productData);
+      res.send(products);
     }
   });
 });
@@ -492,7 +477,7 @@ app.get("/graphiscore/:_id", function(req, res){
       _id: 1,
       productName: 1,
       productDscrp: 1,
-      productImage: 1,
+      productImgUrl: 1,
       average: {
         $avg: "$reviews.rate"
       },
@@ -516,9 +501,6 @@ app.get("/graphiscore/:_id", function(req, res){
     if (productPrev.length === 0) {
       res.render("error", { message: "Product not found" });
     } else {
-      if (productPrev[0].productImage) {
-        productPrev[0].productImage = productPrev[0].productImage.toString('base64');
-      }
       if (productPrev[0].average) {
         productPrev[0].average = parseFloat(productPrev[0].average.toFixed(1));
       }
@@ -571,7 +553,7 @@ app.get("/review/:_id", checkIfNotAuthenticated, function(req, res){
       $project: {
         _id: "$product._id",
         productName: "$product.productName",
-        productImage: "$product.productImage",
+        productImgUrl: "$product.productImgUrl",
         average: { $round: ["$average", 1] },
         totalReviews: { $sum: "$count" },
         ratings: { $size: "$users" },
@@ -583,9 +565,6 @@ app.get("/review/:_id", checkIfNotAuthenticated, function(req, res){
     if (err) {
       console.error(err);
     } else {
-      if (productPrev[0].productImage) {
-        productPrev[0].productImage = productPrev[0].productImage.toString('base64');
-      }
       const errors = req.flash("error") || [];
       res.render("review", { productPrev: productPrev, errors });
     }
@@ -597,15 +576,12 @@ async function account(id) {
   try {
     const user = await User.findById(id)
     const reviews = await Review.find({ user: id })
-      .populate("product", "productName productImage")
+      .populate("product", "productName productImgUrl")
       .select("rate review date")
       .lean();
 
     // format date and base64 encode product image
     reviews.forEach((review) => {
-      if (review.product.productImage) {
-        review.product.productImage = review.product.productImage.toString("base64");
-      }
       if (review.date) {
         review.date = review.date.toLocaleString("en-US", {
           month: "2-digit",

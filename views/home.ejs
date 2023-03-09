@@ -55,26 +55,37 @@
         <div class="group-product">
           <% for (var i = 0; i < mostRated.length; i++) { %>
             <a href="/graphiscore/<%=mostRated[i]._id%>" class="rated-product">
-              <div>
-                <img src="data:image/png;base64, <%=mostRated[i].productImage%>" alt="">
-                <h4><%= mostRated[i].productName %></h4>
-                <p><%= mostRated[i].productDscrp.substring(0, 200) %></p>
+              <div class="product-home-img">
+                <img src="<%=mostRated[i].productImgUrl%>" alt="">
               </div>
-              <p>Reviews (<%= mostRated[i].totalReviews %>)</p>  
-              <ul>
-                <div class="star-rating-home"></div>
-                <p class="av-home"><%= mostRated[i].average %></p> 
-                <p>(<%= mostRated[i].ratings %>)</p>
-              </ul>
+              <div class="product-home-selfCont">
+                <div>
+                  <h4><%= mostRated[i].productName %></h4>
+                  <p><%= mostRated[i].productDscrp.substring(0, 130) %>...</p>
+                </div>
+      
+                <ul>
+                  <p>Reviews (<%= mostRated[i].totalReviews %>)</p>  
+                  <div>
+                    <div class="star-rating-home"></div>
+                    <p class="av-home"><%= mostRated[i].average %></p> 
+                    <p>(<%= mostRated[i].ratings %>)</p>
+                  </div>
+                </ul>
+              </div>
             </a>
           <% } %>
         </div>
       </div>
 
       <div class="news">
-        <h3>📄 TODAY'S NEWS</h3>
-        <img src="/imgs/gtx-img2.jpg" alt="">
-        <p>NVIDIA has officially announced the release of their new RTX 3080 Ti graphics card, which is a more powerful version of their popular RTX 3080 card.</p>
+        <h3>📄 LATEST NEWS</h3>
+        <div class="RTX-news">
+          <p>NVIDIA has officially announced the release of their new RTX 3080 Ti graphics card.</p>
+          <img src="https://insidehpc.com/wp-content/uploads/2018/12/rtx.jpg" alt="">
+        </div>
+        
+        
       </div>
     </div>
 
