@@ -21,7 +21,11 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(session({
   secret: "Our little secret.",
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: {
+        secure: true, // Set to true if using HTTPS
+        maxAge: 86400000 // Set cookie expiration time in milliseconds
+    }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
