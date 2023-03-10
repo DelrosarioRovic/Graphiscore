@@ -27,8 +27,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 mongoose.set('strictQuery', false);
-// mongoose.connect('mongodb+srv://Akocrovic123:Akocrovic123@mydb.jfyc7mf.mongodb.net/userDB',{ useNewUrlParser: true});
-mongoose.connect('mongodb://127.0.0.1:27017/userDB',{ useNewUrlParser: true});
+mongoose.connect('mongodb+srv://Akocrovic123:Akocrovic123@mydb.jfyc7mf.mongodb.net/userDB',{ useNewUrlParser: true});
+// mongoose.connect('mongodb://127.0.0.1:27017/userDB',{ useNewUrlParser: true});
 
 // register user db
 const userSchema = new mongoose.Schema({

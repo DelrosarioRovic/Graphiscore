@@ -31,25 +31,32 @@ const searchBar = document.querySelector("#search");
 const searchclass= document.querySelector(".search");
 const search_Result_main = document.getElementById('search-results-bar');
 const searchX = document.querySelector(".search-delete");
+
 searchclass.addEventListener('click', function() {
   document.querySelector(".hide-right-nav").classList.add("if-press-hide");
   document.querySelector(".right-nav").style.width = "100%";
+  searchclass.style.width = "100%";
   searchX.style.display = "block";
 });
-searchX.addEventListener("click", function() {
-  search_Result_main.innerHTML = "";
-  searchBar.value = "";
-  searchBar.focus();
-});
+
 document.addEventListener("click", function(event){
   if (!searchclass.contains(event.target)) {
     document.querySelector(".hide-right-nav").classList.remove("if-press-hide");
+    searchclass.style.removeProperty("width");
     search_Result_main.innerHTML = "";
     searchBar.value = "";
     search_Result_main.style.display = "none";
     searchX.style.display = "none";
   }
 });
+
+// delete search input
+searchX.addEventListener("click", function() {
+  search_Result_main.innerHTML = "";
+  searchBar.value = "";
+  searchBar.focus();
+});
+
 //search function
 
 searchBar.addEventListener('input', () => {
@@ -99,7 +106,38 @@ searchBar.addEventListener('input', () => {
   }
 });
 
+//search on mobile responsive
+const myTopnav = document.getElementById("myTopnav");
 
+function handleSearchClick() {
+  myTopnav.style.cssText = "height: 0; position: static;";
+  searchclass.style.cssText = "position: absolute; top: -6px; right: 10px;";
+  document.querySelector(".right-nav").style.position = "relative";
+}
+
+function handleDocClick(event) {
+  if (!searchclass.contains(event.target)) {
+    myTopnav.style.cssText = "";
+    searchclass.style.cssText = "";
+    document.querySelector(".right-nav").style.position = "";
+  }
+}
+
+function handleResize() {
+  if (window.innerWidth < 767) {
+    searchclass.addEventListener('click', handleSearchClick);
+    document.addEventListener('click', handleDocClick);
+  } else {
+    searchclass.removeEventListener('click', handleSearchClick);
+    document.removeEventListener('click', handleDocClick);
+    myTopnav.style.cssText = "";
+    searchclass.style.cssText = "";
+    document.querySelector(".right-nav").style.position = "";
+  }
+}
+
+handleResize();
+window.addEventListener('resize', handleResize);
 
 
 //
@@ -274,7 +312,8 @@ try {
         const product = products.find(p => p.productName === productName);
         const productImgUrl = product.productImgUrl;
         reviewContainer.querySelector('h3').textContent = productName;
-        const img = reviewContainer.querySelector("img");
+        const img = document.querySelector('.productImgss');
+        console.log(img);
         img.setAttribute('src', productImgUrl);
         img.setAttribute('alt', productName); 
       
@@ -308,12 +347,18 @@ function renderProducts(productsToRender) {
     productHTML += `
       <div class="product-div">
         <a href="/graphiscore/${product._id}">
-          <img src ="${product.productImgUrl}" class="gpus-img">
-          <h2 class="product-name">${product.productName}</h2>
-          <p class="product-rate">Ratings ${product.numReviews}</p>
-          <p class="product-totalReview">Reviews ${product.totalReview}</p>
-          <div class="star-rating-gpu"></div>
-          <p class="product-aver">${product.averageRating}</p>
+          <div class="top-gpus">
+            <img src ="${product.productImgUrl}" class="gpus-img">
+            <div class="average-gpusc">
+              <div class="star-rating-gpu"></div>
+              <p class="product-aver">${product.averageRating}</p>
+            </div>
+          </div>
+          <div class="gpus-product-desc">
+            <h2 class="product-name">${product.productName}</h2>
+            <p class="product-rate">Ratings ${product.numReviews}</p>
+            <p class="product-totalReview">Reviews ${product.totalReview}</p>
+          </div>
         </a>
       </div>
     `;
@@ -355,11 +400,6 @@ searchGpu.addEventListener("input", filterProducts);
 
 } catch (error) {}
 
-
-
-
-
-
 //loading text animation
 try {
   function applySkeletonLoading(id) {
@@ -383,33 +423,26 @@ applySkeletonLoading('#ratings');
 } catch (error) {}
 
 
-//loading img animation 
+
+//loading img animation
 try {
   function applySkeletonLoadingImg(id) {
     const element = document.querySelector(id);
   
     // Add the skeleton class to the element if it's empty
-    if (element.src ==="") {
-      element.classList.add('skeleton-img');
+    if (element.getAttribute("src") ==='') {
+      element.classList.add('skeleton', '.skeleton-img');
     }
   
     // Remove the skeleton class when the element's <p> element has content
     element.addEventListener('DOMSubtreeModified', () => {
-      if (element.src !=="") {
-        element.classList.remove('skeleton-img');
+      if (element.getAttribute("src") !=='') {
+        element.classList.remove('skeleton', '.skeleton-img');
       }
     });
   }
-  applySkeletonLoadingImg('#img-skeleton');
+  applySkeletonLoadingImg(".productImgss");
 } catch (error) {}
-
-
-
-
-
-
-//handling error 
-
 
 
 

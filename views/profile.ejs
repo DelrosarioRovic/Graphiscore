@@ -45,14 +45,16 @@
             <img src="<%= review.product.productImgUrl %>" alt="" class="activty_img">
           </div>
           <div class="profile_activty_description">
-            <div class="profile_activty_name">
-              <h2><%= review.product.productName %></h2>
-              <div class="profile_activity_average"> 
-                <span class="star-rating-useracc"></span>
-                <span class="av-user-account"><%= review.rate %></span>
+            <div>
+              <div class="profile_activty_name">
+                <h2><%= review.product.productName %></h2>
+                <div class="profile_activity_average"> 
+                  <span class="star-rating-useracc"></span>
+                  <span class="av-user-account"><%= review.rate %></span>
+                </div>
               </div>
+              <p class="activty_description"><%= review.review %></p>
             </div>
-            <p class="activty_description"><%= review.review %></p>
             <p class="activty_datetime"><%= review.date %></p>
           </div>
         </div>
