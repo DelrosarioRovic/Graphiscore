@@ -1,9 +1,6 @@
 //jshint esversion:6
-<<<<<<< HEAD
-require('dotenv').config()
-=======
+//addingthis
 require('dotenv').config();
->>>>>>> b8c3f22ca4d6ec06a85d57f67ea6d09486b77905
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
