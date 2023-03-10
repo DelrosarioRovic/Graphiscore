@@ -111,6 +111,7 @@ app.use(express.json());
 app.use(flash());
 app.use(function(req, res, next) {
   if (req.isAuthenticated()) {
+    console.log("User authenticated successfully:", req.user);
     res.locals.padala = "iflogin";
     res.locals.displayName = req.user.displayName;
     res.locals.profilePicUrl = req.user.profilePicUrl;
@@ -332,6 +333,7 @@ app.post("/register", function(req, res) {
           res.redirect("/register");
         } else {
           passport.authenticate("local")(req, res, function() {
+            console.log("User authenticated successfully:", req.user);
             req.session.padala = "iflogin";
             req.session.displayName = req.user.displayName;
             req.session.profilePicUrl = req.user.profilePicUrl;
