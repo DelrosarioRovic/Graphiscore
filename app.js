@@ -546,53 +546,97 @@ app.get("/graphiscore/:_id", function(req, res){
 
 });
 
-app.get("/review/:_id", checkIfNotAuthenticated, function(req, res){
+// app.get("/review/:_id", checkIfNotAuthenticated, function(req, res){
+//   const getUrl = req.params._id;
+//   Review.aggregate([
+//     {
+//       $match: { product: mongoose.Types.ObjectId(getUrl) }
+//     },
+//     {
+//       $group: {
+//         _id: "$product",
+//         count: { $sum: { $cond: [{ $ne: ["$review", ""] }, 1, 0] } },
+//         average: { $avg: "$rate" },
+//         users: { $addToSet: "$user" },
+//       }
+//     },
+//     {
+//       $lookup: {
+//         from: "products",
+//         localField: "_id",
+//         foreignField: "_id",
+//         as: "product"
+//       }
+//     },
+//     {
+//       $unwind: "$product"
+//     },
+//     {
+//       $project: {
+//         _id: "$product._id",
+//         productName: "$product.productName",
+//         productImgUrl: "$product.productImgUrl",
+//         average: { $round: ["$average", 1] },
+//         totalReviews: { $sum: "$count" },
+//         ratings: { $size: "$users" },
+//         reviews: 1
+//       }
+//     }
+//   ])
+//   .exec((err, productPrev) => {
+//     if (err) {
+//       console.error(err);
+//     } else {
+//       const errors = req.flash("error") || [];
+//       res.render("review", { productPrev: productPrev, errors });
+//     }
+//   });
+// });
+app.get("/review/:_id", checkIfNotAuthenticated, async (req, res) => {
   const getUrl = req.params._id;
-  Review.aggregate([
-    {
-      $match: { product: mongoose.Types.ObjectId(getUrl) }
-    },
-    {
-      $group: {
-        _id: "$product",
-        count: { $sum: { $cond: [{ $ne: ["$review", ""] }, 1, 0] } },
-        average: { $avg: "$rate" },
-        users: { $addToSet: "$user" },
-      }
-    },
-    {
-      $lookup: {
-        from: "products",
-        localField: "_id",
-        foreignField: "_id",
-        as: "product"
-      }
-    },
-    {
-      $unwind: "$product"
-    },
-    {
-      $project: {
-        _id: "$product._id",
-        productName: "$product.productName",
-        productImgUrl: "$product.productImgUrl",
-        average: { $round: ["$average", 1] },
-        totalReviews: { $sum: "$count" },
-        ratings: { $size: "$users" },
-        reviews: 1
-      }
-    }
-  ])
-  .exec((err, productPrev) => {
-    if (err) {
-      console.error(err);
-    } else {
-      const errors = req.flash("error") || [];
-      res.render("review", { productPrev: productPrev, errors });
-    }
-  });
 
+  try {
+    const reviews = await Review.find({ product: mongoose.Types.ObjectId(getUrl) });
+
+    let totalReviews = 0;
+    let ratings = new Set();
+    let sumRatings = 0;
+
+    for (const review of reviews) {
+      if (review.review !== "") {
+        totalReviews++;
+      }
+      ratings.add(review.rate);
+      sumRatings += review.rate;
+    }
+
+    const product = await Product.findById(getUrl);
+
+    const average = reviews.length > 0 ? sumRatings / reviews.length : 0;
+    const ratingsCount = ratings.size > 0 ? ratings.size : 0;
+
+    const productPrev = [{
+      _id: product._id,
+      productName: product.productName,
+      productImgUrl: product.productImgUrl,
+      average: average.toFixed(1),
+      totalReviews: totalReviews,
+      ratings: ratingsCount,
+    }];
+
+    const errors = req.flash("error") || [];
+    res.render("review", { productPrev: productPrev, errors: errors });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("An error occurred while fetching data.");
+  }
 });
+
+
+
+
+
+
 
 async function account(id) {
   try {

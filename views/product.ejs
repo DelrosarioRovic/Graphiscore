@@ -24,7 +24,13 @@
      <div class="rating-average">
          <!-- <div class="star-rating"></div>  -->
         <div>
-         <span class="average-value"><%= productPrev[0].average %></span>
+         <span class="average-value">
+            <% if (productPrev[0].average) { %>
+                 <%= productPrev[0].average %>
+           <% } else { %>
+                0
+           <% } %>
+        </span>
          <p>Average Rating</p>
         </div>
      </div>
