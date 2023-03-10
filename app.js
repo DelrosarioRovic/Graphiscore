@@ -15,16 +15,29 @@ const { validateHeaderName } = require("http");
 const toastr = require("toastr");
 const app = express();
 
+const MongoStore = require('connect-mongo')(session);
+const cookieParser = require('cookie-parser');
+
 app.use(express.static("public"));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 
 
+const store = new MongoStore({
+  mongooseConnection: mongoose.connection
+});
 app.use(session({
   secret: "Our little secret.",
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  store: store,
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24, 
+    secure: false, 
+    httpOnly: true, 
+  }
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -101,12 +114,17 @@ app.use(function(req, res, next) {
     res.locals.padala = "iflogin";
     res.locals.displayName = req.user.displayName;
     res.locals.profilePicUrl = req.user.profilePicUrl;
-    
+    console.log('User is authenticated'+req.user);
   } else {
+    console.log('User is not authenticated');
     res.locals.padala = "ifnotlogin";
   }
   next();
+}, function(err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
+
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return res.redirect("/");
