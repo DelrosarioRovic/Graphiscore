@@ -211,7 +211,7 @@ margin-top: 6px;
     background-color: #f9f9f9;
     min-width: 200px;
     box-shadow: 0px 0px 1px 1px rgb(177 172 172 / 75%);
-    z-index: 1;
+    z-index: 3;
     top: 4em;
     border-radius: 5px;
     overflow: hidden;
@@ -579,10 +579,66 @@ margin-top: 6px;
     background-color: rgba(0, 128, 0, 0.192);
     display: flex;
 }
+.content-intro-box {
+    margin: auto;
+    display: flex;
+    width: 100%;
+}
+.gpu-graphics-animation {
+    height: 350px;
+    width: 45%;
+    margin: auto;
+    position:relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.gpu-graphics-animation div {
+    width: 265px;
+    height: 280px;
+    position: absolute;
+    border-radius: 15px;
+}
+.gpu-box1 {
+    rotate: -20deg;
+    z-index: 1;
+    background-color: #32c904;
+    transition: .4s;
+    animation: gpuanimation 1s linear infinite alternate;
+}
+@keyframes  gpuanimation{
+    0% {
+        opacity: .5;
+    }
+    25% {
+        opacity: .6;
+    }
+    50% {
+        opacity: .7;
+    }
+    75% {
+        opacity: .8;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+.gpu-box2 {
+    background-color: rgba(240, 240, 240, 0.918);
+    rotate: 20deg;
+    z-index: 2;
+}
+.gpu-box2 img{
+    object-fit: cover;
+    object-position: center;
+    width: 100%;
+}
+
 .introduction-content {
-    max-width: 600px;
-    padding: 2em 4em;
-    padding-bottom: 6em;
+    width: 55%;
+    padding: 1em 4em;
+    padding-bottom: 3em;
+    padding-right: 0;
     padding-top: 0;
     line-height: 1.5;
     display: flex;
@@ -1503,9 +1559,6 @@ footer .footer-content {
         left: 0;
     }
     /* intro home section */
-    .introduction-content {
-        width: 100%;
-    }
 }
 /* Phone */
 @media only screen and (max-width: 767px) {
@@ -1546,7 +1599,6 @@ footer .footer-content {
         display: block !important;
         width: fit-content;
         margin: 0 auto 0 auto; 
-        
     }
     .main-nav li {
         margin-bottom: 10px;
@@ -1558,7 +1610,7 @@ footer .footer-content {
     #myTopnav.active {
         height: 50vh;
         top: 60px;
-        z-index: 3;
+        z-index: 4;
     }
     /* user nav */
     .user-container {
@@ -1662,6 +1714,14 @@ footer .footer-content {
     /* grapiscore section */
     .product-div {
         width: 100%;
+    }
+    /* intro home graphics */
+    .gpu-graphics-animation {
+        display: none;
+    }
+    .introduction-content {
+        width: 100%;
+        padding: 1em;
     }
   }
   /* Tablet */
@@ -1791,7 +1851,9 @@ footer .footer-content {
     .rated-products-container {
         width: 850px;
     }
-    
+    .content-intro-box  {
+        width: 1000px;
+    }
   }
   
 /*  loading animation */
