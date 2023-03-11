@@ -18,11 +18,19 @@
                       <% } else { %>
                         <img src="/imgs/My project.png" alt="" class="profile-picture">
                       <% } %>
-    
                 </div>
                 <!-- <input type="file" id="file" accept="img/*"> -->
-                <label for="file" class="choose_file"><i class='bx bxs-image-add'></i>Choose Photo</label>
-                <input type="text" name="profilePicUrl" id="profilePicUrl">
+                <div class="uploadImage">
+                    <button class="choose_file" type="button" disabled>
+                            <i class='bx bxs-image-add'></i>
+                            <span>Choose Photo</span>
+                    </button>
+                    <button class="urlUploadPic">
+                        <i class='bx bx-link-alt'></i>
+                        <span>Upload Using Link</span>
+                    </button>
+                    <!-- <input type="text" name="profilePicUrl" id="profilePicUrl"> -->
+                </div>
             </div>
 
             <div class="account_display">

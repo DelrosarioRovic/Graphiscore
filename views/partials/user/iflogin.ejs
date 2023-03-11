@@ -4,13 +4,13 @@
         <% if (profilePicUrl) { %>
             <img src="<%= profilePicUrl %>" alt="">
         <% } else { %>
-            <img src="/imgs/My project.png" alt="">
+            <img src="https://media.discordapp.net/attachments/1045257540428107808/1083260571270520882/My_project1-removebg-preview.png?width=550&height=413" alt="">
         <% } %>
         
     </div>
     <div class="dropdown-content-user">
-            <a href="/profile">Profile</a>
-            <a href="/account-setting">Account Settings</a>
-            <a href="/logout" role="button">Sign Out</a>
+        <li><i class='bx bxs-user'></i><a href="/profile">Profile</a></li>
+        <li><i class='bx bxs-cog'></i><a href="/account-setting">Account Settings</a></li>
+        <li><i class='bx bxs-log-out'></i><a href="/logout" role="button">Sign Out</a></li>
     </div>
 </div>

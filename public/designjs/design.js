@@ -1,14 +1,15 @@
 const button = document.querySelector('.dropdown-button');
 const content = document.querySelector('.dropdown-content');
+const mainNav = document.querySelector(".main-nav").style; 
 //drop down
 button.addEventListener('click', function() {
-  var mainNav = document.querySelector(".main-nav").style.display;
-  if (mainNav === 'flex') {
-    document.querySelector(".main-nav").style.display = 'none';
+  if (mainNav.display === 'flex') {
+    mainNav.display = 'none';
   } else {
-    document.querySelector(".main-nav").style.display = 'flex';
+    mainNav.display = 'flex';
   }
 });
+
 
 //more menu nav
 NewMenu = document.querySelector(".nav-menu");
@@ -35,14 +36,18 @@ const searchX = document.querySelector(".search-delete");
 searchclass.addEventListener('click', function() {
   document.querySelector(".hide-right-nav").classList.add("if-press-hide");
   document.querySelector(".right-nav").style.width = "100%";
+  document.querySelector(".left-nav .logo").style.transform = "scale(0.85)";
   searchclass.style.width = "100%";
+  searchclass.style.transition = "width 0.5s ease-in-out";
   searchX.style.display = "block";
 });
 
 document.addEventListener("click", function(event){
   if (!searchclass.contains(event.target)) {
     document.querySelector(".hide-right-nav").classList.remove("if-press-hide");
+    searchclass.style.removeProperty("transition");
     searchclass.style.removeProperty("width");
+    document.querySelector(".left-nav .logo").style.removeProperty("transform");
     search_Result_main.innerHTML = "";
     searchBar.value = "";
     search_Result_main.style.display = "none";
@@ -111,7 +116,7 @@ const myTopnav = document.getElementById("myTopnav");
 
 function handleSearchClick() {
   myTopnav.style.cssText = "height: 0; position: static;";
-  searchclass.style.cssText = "position: absolute; top: -6px; right: 10px;";
+  searchclass.style.cssText = "position: absolute; top: -7px; right: 10px; width: 100%";
   document.querySelector(".right-nav").style.position = "relative";
 }
 
@@ -144,8 +149,7 @@ window.addEventListener('resize', handleResize);
 //user-login
 try {
   const userLoginContainer = document.querySelector('.user-login-container');
-  const userContent = document.querySelector('.dropdown-content-user');
-
+  const userContent = document.querySelector(".dropdown-content-user");
 function toggleDropdown() {
   userLoginContainer.classList.toggle('clicked');
   userContent.classList.toggle('clicked');

@@ -6,7 +6,7 @@
       <% if (currentUser.user.profilePicUrl) { %>
         <img src="<%= currentUser.user.profilePicUrl %>" class="profile_settings_img">
       <% } else { %>
-        <img src="/imgs/My project.png" alt="" class="profile_settings_img">
+        <img src="https://media.discordapp.net/attachments/1045257540428107808/1083260571270520882/My_project1-removebg-preview.png?width=550&height=413" alt="" class="profile_settings_img">
       <% } %>
     </div>
     <div class="profile_settings_name">
@@ -14,7 +14,7 @@
     </div>
 
     <div class="profile_settings_link" <% if (hideButtons) { %>style="display: none;"<% } %>>
-      <a href=""><i class='bx bx-edit profile_icons'></i>Edit profile</a>
+      <a href="/account-setting"><i class='bx bx-edit profile_icons'></i>Edit profile</a>
       <a href=""><i class='bx bx-share profile_icons'></i>Share profile</a>
     </div>
     <p class="profile_settings_bio">

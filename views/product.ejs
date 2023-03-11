@@ -36,6 +36,12 @@
      </div>
  </div>
  <h1 class="rates-comment">Ratings & Reviews</h1>
+<% if (!productPrev[0].average) { %>
+    <div class="ifproductReview">
+        <p>No reviews found for this Gpu yet</p>
+        <a href="/review/<%=productPrev[0]._id %>">Be the first to write one!</a>
+    </div>
+<% } %>
     <%productPrev[0].reviews.forEach(review => { %>
             <div class="rates_reviews">
                 <a href="/profile/<%= review._id %>">
@@ -44,7 +50,7 @@
                     <% if (review.profilePicUrl) { %>
                         <img src="<%= review.profilePicUrl %>" alt="PIC" class="profile">
                     <% } else { %>
-                        <img src="/imgs/My project.png" alt="PIC" class="profile">
+                        <img src="https://media.discordapp.net/attachments/1045257540428107808/1083260571270520882/My_project1-removebg-preview.png?width=550&height=413" alt="PIC" class="profile">
                     <% } %>
                      
                   </div>

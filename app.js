@@ -546,52 +546,6 @@ app.get("/graphiscore/:_id", function(req, res){
 
 });
 
-// app.get("/review/:_id", checkIfNotAuthenticated, function(req, res){
-//   const getUrl = req.params._id;
-//   Review.aggregate([
-//     {
-//       $match: { product: mongoose.Types.ObjectId(getUrl) }
-//     },
-//     {
-//       $group: {
-//         _id: "$product",
-//         count: { $sum: { $cond: [{ $ne: ["$review", ""] }, 1, 0] } },
-//         average: { $avg: "$rate" },
-//         users: { $addToSet: "$user" },
-//       }
-//     },
-//     {
-//       $lookup: {
-//         from: "products",
-//         localField: "_id",
-//         foreignField: "_id",
-//         as: "product"
-//       }
-//     },
-//     {
-//       $unwind: "$product"
-//     },
-//     {
-//       $project: {
-//         _id: "$product._id",
-//         productName: "$product.productName",
-//         productImgUrl: "$product.productImgUrl",
-//         average: { $round: ["$average", 1] },
-//         totalReviews: { $sum: "$count" },
-//         ratings: { $size: "$users" },
-//         reviews: 1
-//       }
-//     }
-//   ])
-//   .exec((err, productPrev) => {
-//     if (err) {
-//       console.error(err);
-//     } else {
-//       const errors = req.flash("error") || [];
-//       res.render("review", { productPrev: productPrev, errors });
-//     }
-//   });
-// });
 app.get("/review/:_id", checkIfNotAuthenticated, async (req, res) => {
   const getUrl = req.params._id;
 
