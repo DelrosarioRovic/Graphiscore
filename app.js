@@ -159,6 +159,10 @@ app.get('/search_bar', (req, res) => {
     });
 });
 
+app.get("/about", function(req, res) {
+  res.render("about");
+});
+
 app.get("/", function(req, res) {
   Review.aggregate([
   {

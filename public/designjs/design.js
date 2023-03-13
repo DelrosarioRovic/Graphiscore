@@ -484,6 +484,18 @@ try {
 //
 
 
+// loading average animation
+try {
+  const averageSkeletonAnimation = document.querySelector("#av");
+if (averageSkeletonAnimation.textContent ==="") {
+  averageSkeletonAnimation.classList.add('skeleton', 'skeleton-average');
+}
+averageSkeletonAnimation.addEventListener('DOMSubtreeModified', () => {
+  if (averageSkeletonAnimation.textContent !== '') {
+    averageSkeletonAnimation.classList.remove('skeleton', 'skeleton-text');
+  }
+});
+} catch (error) {}
 //loading text animation
 try {
   function applySkeletonLoading(id) {
@@ -515,13 +527,13 @@ try {
   
     // Add the skeleton class to the element if it's empty
     if (element.getAttribute("src") ==='') {
-      element.classList.add('skeleton', '.skeleton-img');
+      element.classList.add('skeleton');
     }
   
     // Remove the skeleton class when the element's <p> element has content
     element.addEventListener('DOMSubtreeModified', () => {
       if (element.getAttribute("src") !=='') {
-        element.classList.remove('skeleton', '.skeleton-img');
+        element.classList.remove('skeleton');
       }
     });
   }
