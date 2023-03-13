@@ -111,13 +111,13 @@ app.use(express.json());
 app.use(flash());
 app.use(function(req, res, next) {
   if (req.isAuthenticated()) {
-    console.log("User authenticated successfully:", req.user);
+    // console.log("User authenticated successfully:", req.user);
     res.locals.padala = "iflogin";
     res.locals.displayName = req.user.displayName;
     res.locals.profilePicUrl = req.user.profilePicUrl;
-    console.log('User is authenticated'+req.user);
+    // console.log('User is authenticated'+req.user);
   } else {
-    console.log('User is not authenticated');
+    // console.log('User is not authenticated');
     res.locals.padala = "ifnotlogin";
   }
   next();
@@ -192,7 +192,7 @@ app.get("/", function(req, res) {
       }
     },
   {
-    $sort: { ratings: -1, count: -1 }
+    $sort: { average: -1, ratings: -1, count: -1 }
   },
   {
     $limit: 5
@@ -333,7 +333,7 @@ app.post("/register", function(req, res) {
           res.redirect("/register");
         } else {
           passport.authenticate("local")(req, res, function() {
-            console.log("User authenticated successfully:", req.user);
+            // console.log("User authenticated successfully:", req.user);
             req.session.padala = "iflogin";
             req.session.displayName = req.user.displayName;
             req.session.profilePicUrl = req.user.profilePicUrl;

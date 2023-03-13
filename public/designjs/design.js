@@ -86,13 +86,17 @@ searchBar.addEventListener('input', () => {
 
             if (user.profilePicUrl) {
               const primgSearch = document.createElement('img');
+              const primgBox = document.createElement("div");
               primgSearch.src = user.profilePicUrl;
-              userLink.appendChild(primgSearch);
+              primgBox.appendChild(primgSearch);
+              userLink.appendChild(primgBox);
             }
             else {
               const primgSearch = document.createElement('img');
-              primgSearch.src = "/imgs/login.jpg";
-              userLink.appendChild(primgSearch);
+              const primgBox = document.createElement("div");
+              primgSearch.src = "/imgs/My project.png";
+              primgBox.appendChild(primgSearch);
+              userLink.appendChild(primgBox);
             }           
             userLink.appendChild(userText);
             search_Result_main.appendChild(userLink);
@@ -367,7 +371,6 @@ function renderProducts(productsToRender) {
       </div>
     `;
   });
-
   productList.innerHTML = productHTML;
 
   // user account graphiscore averating graphics rating
@@ -403,6 +406,83 @@ searchGpu.addEventListener("input", filterProducts);
 
 
 } catch (error) {}
+
+
+// account settings button url link
+try {
+  const popupUrlLink = document.querySelector(".popup-link-usettings");
+const urlbtnAccountset = document.querySelector(".urlUploadPic");
+const body = document.querySelector('body');
+const account_container = document.querySelector(".account_container");
+const overlay = document.querySelector('.overlay');
+
+function disableScroll() {
+  body.style.overflow = 'hidden';
+}
+
+function enableScroll() {
+  body.style.overflow = 'auto';
+}
+
+function urlPuttingFunc() {
+  urlbtnAccountset.classList.add("active");
+  popupUrlLink.classList.add("active");
+  account_container.style.zIndex = "0"; /* set to 0 so it appears behind overlay */
+  overlay.classList.add('active'); /* display overlay */
+  disableScroll();
+}
+function urlRemovingFunc() {
+  popupUrlLink.classList.remove("active");
+  urlbtnAccountset.classList.remove("active");
+  account_container.style.zIndex = "1"; /* set back to 1 so it appears in front of overlay */
+  overlay.classList.remove('active'); /* hide overlay */
+  enableScroll();
+}
+
+urlbtnAccountset.addEventListener("click", function(event){
+  event.preventDefault();
+  urlPuttingFunc();
+});
+
+document.addEventListener("click", function(event){
+  if (!urlbtnAccountset.contains(event.target) && !popupUrlLink.contains(event.target)) {
+    urlRemovingFunc();
+  }
+});
+} catch (error) {}
+
+// if url photo 
+try {
+  const profilePicUrlInput = document.getElementById('profilePicUrl');
+  const uploadLinkSubmitBtn = document.getElementById('uploadLinkSubmit');
+  const profilePicImgReg = document.querySelector('.profile-picture');
+  const profileUrlHiddn = document.getElementById('hiddenvalueUrl');
+  function isValidUrl(url) {
+    try {
+      new URL(url);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+  uploadLinkSubmitBtn.addEventListener('click', function(event) {
+    event.preventDefault();
+    const profilePicUrl = profilePicUrlInput.value;
+
+    if (!isValidUrl(profilePicUrl)) {
+      toastr.options.positionClass = 'toast-bottom-right';
+      toastr.error('The URL is not valid.');
+    } else {
+      profilePicImgReg.src = profilePicUrl;
+      profileUrlHiddn.value = profilePicUrlInput.value;
+      urlRemovingFunc();
+      profilePicUrlInput.value = '';
+    }
+    profilePicUrlInput.value = '';
+  });
+} catch (error) {}
+//
+
 
 //loading text animation
 try {

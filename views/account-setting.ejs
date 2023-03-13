@@ -25,11 +25,20 @@
                             <i class='bx bxs-image-add'></i>
                             <span>Choose Photo</span>
                     </button>
-                    <button class="urlUploadPic">
+                    <button class="urlUploadPic" id="uploadLinkButton">
                         <i class='bx bx-link-alt'></i>
                         <span>Upload Using Link</span>
                     </button>
-                    <!-- <input type="text" name="profilePicUrl" id="profilePicUrl"> -->
+                    
+                    <div class="popup-link-usettings">
+                        <div class="popup-link-title">
+                            <i class='bx bx-link-alt'></i>
+                            <span>Upload using Link</span>
+                        </div>
+                        <input type="text" id="profilePicUrl">
+                        <input type="hidden" id="hiddenvalueUrl" name="profilePicUrl">
+                        <button type="submit" id="uploadLinkSubmit">Save</button>
+                    </div>
                 </div>
             </div>
 
@@ -46,8 +55,8 @@
                 <button type="submit">Update profile</button>
             </div>
         </form>
+
     </div>
+    <div class="overlay"></div>
 </div>
-
-
 <%- include('partials/footer'); -%>
