@@ -35,14 +35,14 @@
         </div>
         <div id="review-container" class="product-review">
              <span class="productImg-div-review">
-                <img class="productImgss skeleton" src="<%=productPrev[0].productImgUrl%>">
+                <img class="productImgss" src="<%=productPrev[0].productImgUrl%>">
              </span>
             <div>
                 <div>
-                    <h3 id="product-name" class="skeleton skeleton-text"><%= productPrev[0].productName %></h3>
+                    <h3 id="product-name"><%= productPrev[0].productName %></h3>
                     <div>
-                        <div class="star-rating-review" class="skeleton skeleton-text"></div>
-                        <p id="av" class="skeleton skeleton-average"><%= productPrev[0].average %></p>
+                        <div class="star-rating-review"></div>
+                        <p id="av"><%= productPrev[0].average %></p>
                     </div>
                 </div>
                 <div>
@@ -50,8 +50,8 @@
                         <p id="ratings"></p>
                         <p id="reviews"></p>
                     <% } else { %>
-                        <p id="ratings" class="skeleton skeleton-text"><%= productPrev[0].ratings %> Ratings</p>
-                        <p id="reviews" class="skeleton skeleton-text"><%= productPrev[0].totalReviews %> Reviews</p>
+                        <p id="ratings"><%= productPrev[0].ratings %> Ratings</p>
+                        <p id="reviews"><%= productPrev[0].totalReviews %> Reviews</p>
                     <% } %>
                     
                 </div>

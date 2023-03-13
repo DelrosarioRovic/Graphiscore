@@ -293,13 +293,14 @@ try {
       url = `/search?q=${searchTerm}`;
     }
     
-    const response = await fetch(url);
-    const products = await response.json();
-    
-    const resultsHtml = products.map(product => `<p class="product-result" data-product-id="${product._id}">${product.productName}</p>`).join('');
-    searchResults.innerHTML = resultsHtml;
+      const response = await fetch(url);
+      const products = await response.json();
+      // searchResults.innerHTML = '';
 
-    const productResults = document.querySelectorAll('.product-result');
+      const resultsHtml = products.map(product => `<p class="product-result" data-product-id="${product._id}">${product.productName}</p>`).join('');
+      searchResults.innerHTML = resultsHtml;
+
+      const productResults = document.querySelectorAll('.product-result');
 
     productResults.forEach(productResult => {
       productResult.addEventListener('click', async () => {
@@ -496,6 +497,7 @@ averageSkeletonAnimation.addEventListener('DOMSubtreeModified', () => {
   }
 });
 } catch (error) {}
+
 //loading text animation
 try {
   function applySkeletonLoading(id) {

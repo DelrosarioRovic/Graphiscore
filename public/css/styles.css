@@ -2093,8 +2093,24 @@ footer .footer-content {
 .skeleton {
     animation: skeleton-loading 1s linear infinite alternate;
 }
-.skeleton-text {
+
+/* img skeleton animation */
+.skeletonImg {
     width: 100%;
+}
+/* search result skeleton animation */
+.skeletonSearchLoading {
+    width: 100%;
+    height: inherit;
+    object-fit: cover;
+    position: center;
+    display:flex;
+    justify-content: center;
+    overflow:hidden;
+}
+  
+.skeleton-text {
+    width: 49%;
     height: 1em;
     margin-bottom: 5px;
     border-radius: .125em;
@@ -2108,7 +2124,7 @@ footer .footer-content {
 }
 @keyframes skeleton-loading {
     0% {
-        background-color: hsl(200, 20%, 70%);
+        background-color: hsl(0, 0%, 79%);
     }
 
     100% {
