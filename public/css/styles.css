@@ -919,9 +919,10 @@ margin-top: 6px;
     padding: 8px 10px;  
     border-radius: 5px;
     border: solid 1px #c5c5c5;
+    width:100%;
 }
 .news .best-product .best-product-content button {
-    padding: 10px 0;
+    padding: 10px 8px;
     border-radius: 5px;
     background-color: #349e13;
     color: white;

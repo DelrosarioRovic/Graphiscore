@@ -64,9 +64,12 @@
             <img src="https://media0.giphy.com/media/ZJRZS9cTSEVOKjqT7o/giphy.gif?cid=ecf05e47vlnvvdq3rty3bk6h776ey4m56ar4cmmxrena5g1j&rid=giphy.gif&ct=g" alt="">
           </div>
           <div class="best-product-content">
-            <p>Get the best new Gpu in your inbox, every day 👇</p>
-            <input type="text" name="Your-email" placeholder="Your Email">
-            <button>SUBSCRIBE</button>
+            <form action="/daily-notif" method="post">
+              <p>Get the best new Gpu in your inbox, every day 👇</p>
+              <input type="email" name="Your-email" placeholder="Your Email">
+              <button type="submit">SUBSCRIBE</button>
+            </form>
+            
           </div>
         </div>
         

@@ -18,6 +18,9 @@ const app = express();
 const MongoStore = require('connect-mongo')(session);
 const cookieParser = require('cookie-parser');
 
+const nodemailer = require('nodemailer');
+const emailValidator = require('email-validator');
+
 app.use(express.static("public"));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
@@ -62,7 +65,6 @@ const productSchema = new mongoose.Schema({
   productImgUrl: String
 });
 const Product = mongoose.model("Product", productSchema);
-
 
 // *-------------------------
 userSchema.plugin(passportLocalMongoose);
@@ -590,12 +592,6 @@ app.get("/review/:_id", checkIfNotAuthenticated, async (req, res) => {
   }
 });
 
-
-
-
-
-
-
 async function account(id) {
   try {
     const user = await User.findById(id)
@@ -689,6 +685,99 @@ app.post("/account-setting", async (req, res) => {
   );
 
   res.redirect("/profile");
+});
+
+//daily notification for the specific email that subscribes
+app.post('/daily-notif', async function (req, res) {
+  const email = req.body['Your-email'];
+
+  // validate email
+  if (!emailValidator.validate(email)) {
+    return res.status(400).send('Invalid email address');
+  }
+
+  try {
+    const topRatedProduct = await Review.aggregate([
+      {
+        $group: {
+          _id: "$product",
+          count: { $sum: { $cond: [{ $ne: ["$review", ""] }, 1, 0] } },
+          average: { $avg: "$rate" },
+          users: { $addToSet: "$user" }
+        }
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "_id",
+          as: "product"
+        }
+      },
+      {
+        $unwind: "$product"
+      },
+      {
+        $project: {
+          _id: "$product._id",
+          productName: "$product.productName",
+          productDscrp: "$product.productDscrp",
+          productImgUrl: "$product.productImgUrl",
+          average: 1,
+          totalReviews: { $sum: "$count" },
+          ratings: { $size: "$users" }
+        }
+      },
+      {
+        $sort: { average: -1, ratings: -1, count: -1 }
+      },
+      {
+        $limit: 1
+      }
+    ]);
+
+    if (!topRatedProduct.length) {
+      return res.status(500).send('Unable to find a product');
+    }
+
+    // construct email message
+    const message = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Top Rated Product',
+      html: `
+      <h1>Top Product Tody🔥🚀</h1>
+      <h2>${topRatedProduct[0].productName}</h2>
+      <img src="${topRatedProduct[0].productImgUrl}" alt="product image" style="max-width:450px; width:100%">
+      <p>${topRatedProduct[0].productDscrp}</p>
+      <p>Rating: ${topRatedProduct[0].average}</p>
+      <p>Total Reviews: ${topRatedProduct[0].totalReviews}</p>
+      <p>Total Ratings: ${topRatedProduct[0].ratings}</p>
+      `,
+    };
+
+    // send email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+    
+    transporter.sendMail(message, function (err, info) {
+      if (err) {
+        console.log(err);
+        return res.status(500).send('Unable to send email');
+      } else {
+        console.log(info);
+        res.redirect("/");
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send('Unable to find a product');
+  }
 });
 
 let port = process.env.PORT;

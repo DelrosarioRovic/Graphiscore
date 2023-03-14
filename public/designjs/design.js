@@ -148,7 +148,6 @@ function handleResize() {
 handleResize();
 window.addEventListener('resize', handleResize);
 
-
 //
 //user-login
 try {
