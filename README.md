@@ -4,14 +4,15 @@
 
 <h3>Technology</h3>
 <p>The GraphiScore Rating and Review Application was built using the following technologies:</p>
-<h3>Inspiration</h3>
-<p>The design of this application was inspired by the Cafely website, which can be found at https://cafely.vercel.app/. The clean and simple layout, neutral color palette, and use of high-quality images were elements that I sought to incorporate into this project.</p>
-
 <ul>
   <li>Front-end: HTML, CSS, JavaScript, AJAX, EJS</li>
   <li>Back-end: Express, Node.js</li>
   <li>Database: MongoDB, Mongoose</li>
-<ul>
+</ul>
+
+<h3>Inspiration</h3>
+<p>The design of this application was inspired by the Cafely website, which can be found at https://cafely.vercel.app/. The clean and simple layout, neutral color palette, and use of high-quality images were elements that I sought to incorporate into this project.</p>
+
 <h3>Usage</h3>
 <ol>
   <li>Browse through the list of GPUs available on the homepage.</li>
@@ -21,7 +22,7 @@
   <li>To submit a comment on a review, click the "Comment" button and add your thoughts.</li>
 </ol>
 
-<h3>Developers<h3>
+<h3>Developers</h3>
 <ul>
   <li>Rovic Del Rosario</li>
   <li>Alexies Manalastas</li>
