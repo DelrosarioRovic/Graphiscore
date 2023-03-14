@@ -4,7 +4,7 @@
 
 <h3>Technology</h3>
 <p>The GraphiScore Rating and Review Application was built using the following technologies:</p>
-<h3>Inspiration<h3>
+<h3>Inspiration</h3>
 <p>The design of this application was inspired by the Cafely website, which can be found at https://cafely.vercel.app/. The clean and simple layout, neutral color palette, and use of high-quality images were elements that I sought to incorporate into this project.</p>
 
 <ul>
